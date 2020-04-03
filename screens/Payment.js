@@ -22,7 +22,7 @@ import {themeColor, pinkColor} from '../Constant';
 import firebase from '../utils/firebase';
 import {connect} from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
-
+import Loader from '../Component/Loader'
 const stripe = require('stripe-client')(
   'pk_test_CoqYQbVZ6tJwY9dFWN7UTfin00QpVQsX20',
 );
@@ -187,11 +187,8 @@ class Payment extends React.Component {
       <View
         stickyHeaderIndices={[0]}
         style={{backgroundColor: '#323643', flex: 1}}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{color: '#fff'}}
-        />
+               <Loader isVisible  = {loading} />
+
         <CustomHeader title={'PAYMENT'} navigation={navigation} />
         <Carousel
           sliderWidth={screenWidth}

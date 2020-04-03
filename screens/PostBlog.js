@@ -27,6 +27,7 @@ import CustomButton from '../Component/Button';
 import firebase from '../utils/firebase';
 const dimensions = Dimensions.get('window');
 import Modal from 'react-native-modal';
+import Loader from '../Component/Loader'
 
 const windowHeight = dimensions.height;
 const windowWidth = dimensions.width;
@@ -222,11 +223,7 @@ class PostBlog extends React.Component {
       <ScrollView
         style={styles.container}
         contentContainerStyle={{ flexGrow: 1 }}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
+        <Loader isVisible = {loading} />
         {/* {
           showModel ? */}
         <Modal

@@ -17,6 +17,7 @@ import firebaseLib from "react-native-firebase";
 import { connect } from 'react-redux'
 import Spinner from 'react-native-loading-spinner-overlay';
 import { loginUser } from '../redux/actions/authActions'
+import Loader from '../Component/Loader'
 
 
 const auth = firebaseLib.auth()
@@ -96,11 +97,7 @@ class CodeConfirmation extends React.Component {
     const { navigation, loading } = this.props
     return (
         <View style={{ backgroundColor: '#323643', flex: 1 }}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
+        <Loader isVisible = {loading} />
 
           <ScrollView>
         <View style={{ padding: 30, paddingLeft: 15 }}>

@@ -17,6 +17,7 @@ import Video from 'react-native-video';
 import Text from '../Component/Text'
 import VideoPlayer from 'react-native-video-controls';
 import CustomHeader from '../Component/header';
+import Loader from '../Component/Loader';
 class SelectBlog extends React.Component {
   constructor(props) {
     super(props);
@@ -96,11 +97,7 @@ class SelectBlog extends React.Component {
     return (
       <View style={{ backgroundColor: '#323643', flex: 1 }}>
         <CustomHeader navigation={navigation} title={'BLOG'} />
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
+        <Loader isVisible = {loading} />
         <View
           style={{
             height: 50,

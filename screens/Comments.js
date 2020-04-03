@@ -10,6 +10,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { themeColor, pinkColor } from '../Constant';
 import CustomHeader from '../Component/header';
 import CustomButton from '../Component/Button';
+import Loader from '../Component/Loader'
 
 class Comments extends Component {
   state = {
@@ -74,11 +75,7 @@ class Comments extends Component {
       <View style={{ flex: 1, backgroundColor: '#323643' }}>
         <ScrollView style={{ flex: 1, }}>
           <CustomHeader title={'Comments'} navigation={navigation} />
-          <Spinner
-            visible={loading}
-            textContent={'Loading...'}
-            textStyle={{ color: '#fff' }}
-          />
+          <Loader isVisible = {loading} />
           {!!commentsArr.length &&
             commentsArr.map(item => (
               <View style={styles.commentBox}>

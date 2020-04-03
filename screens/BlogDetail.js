@@ -20,7 +20,8 @@ import Video from 'react-native-video';
 import VideoPlayer from 'react-native-video-controls';
 import firebaseLib from 'react-native-firebase';
 import { connect } from 'react-redux';
-import Spinner from 'react-native-loading-spinner-overlay';
+import Loader from '../Component/Loader'
+// import Spinner from 'react-native-loading-spinner-overlay';
 import ControlPanel from '../screens/ControlPanel';
 import Drawer from 'react-native-drawer';
 import { themeColor, pinkColor } from '../Constant';
@@ -110,11 +111,8 @@ class BlogDetail extends React.Component {
         })}
         content={<ControlPanel />}>
         <ScrollView style={{ backgroundColor: '#323643', flex: 1 }}>
-          <Spinner
-            visible={loading}
-            textContent={'Loading...'}
-            textStyle={{ color: '#fff' }}
-          />
+        <Loader isVisible = {loading} />
+
           {!fullScreenHeight && (
             <View>
               <CustomHeader

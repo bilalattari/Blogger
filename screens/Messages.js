@@ -12,18 +12,13 @@ import {
   Image,
   StatusBar,
 } from 'react-native';
-import CustomInput from '../Component/Input';
-import CustomButton from '../Component/Button';
 import CustomHeader from '../Component/header';
 import {withNavigation, NavigationEvents} from 'react-navigation';
-import {Icon, SearchBar} from 'react-native-elements';
 import {themeColor, pinkColor} from '../Constant/index';
-import DocumentPicker from 'react-native-document-picker';
 import {connect} from 'react-redux';
 import firebase from '../utils/firebase';
 import FirebaseLib from 'react-native-firebase';
-import Spinner from 'react-native-loading-spinner-overlay';
-
+import Loader from '../Component/Loader'
 class Messages extends React.Component {
   constructor(props) {
     super(props);
@@ -49,7 +44,6 @@ class Messages extends React.Component {
         true,
       );
       if (!idsArray.length) return this.setState({loading: false});
-
       for (var i = 0; i < idsArray.length; i++) {
         if (idsArray[i] !== userId) {
           const otherUsers = await firebase.getDocument('Users', idsArray[i]);
@@ -66,13 +60,17 @@ class Messages extends React.Component {
               .collection('Messages')
               .orderBy('createdAt')
               .get();
-
-            const lastIndex = doc.docs.length - 1;
-            const message = doc.docs[lastIndex].data().message;
-            otherUsers.data().lastMessage = message;
-
-            otherUsersArr.push(otherUsers.data());
-            this.setState({otherUsersArr, loading: false});
+              if(doc){
+                const lastIndex = doc.docs.length - 1;
+                const message = doc.docs[lastIndex].data().message;
+                otherUsers.data().lastMessage = message;
+    
+                otherUsersArr.push(otherUsers.data());
+                this.setState({otherUsersArr, loading: false});
+              }
+              else{
+                this.setState({otherUsersArr, loading: false});
+              }
           });
         }
       }
@@ -108,18 +106,14 @@ class Messages extends React.Component {
       </View>
     </TouchableOpacity>
   );
-
   render() {
     const {navigation} = this.props;
     const {otherUsersArr, loading} = this.state;
-
+    console.log(otherUsersArr , 'otherUsersArrotherUsersArr')
     return (
       <View style={styles.container}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{color: '#fff'}}
-        />
+               <Loader isVisible = {loading} />
+
 
         {/* <StatusBar backgroundColor={themeColor} translucent /> */}
         {/* <View

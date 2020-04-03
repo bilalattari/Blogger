@@ -18,7 +18,7 @@ import {themeColor, pinkColor} from '../Constant/index';
 import Slogan from '../Component/Slogan';
 import firebaseLib from 'react-native-firebase';
 import Spinner from 'react-native-loading-spinner-overlay';
-
+import Loader from '../Component/Loader'
 
 export default class ForgetPassword extends React.Component {
   constructor(props) {
@@ -50,11 +50,8 @@ export default class ForgetPassword extends React.Component {
     let {showModel, loading} = this.state;
     return (
       <View style={styles.container}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{color: '#fff'}}
-        />
+                <Loader isVisible = {loading} />
+
 
         <CustomHeader
           navigation={this.props.navigation}

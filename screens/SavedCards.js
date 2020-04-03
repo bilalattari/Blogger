@@ -18,6 +18,7 @@ import {themeColor, pinkColor} from '../Constant';
 import Dialogue from '../Component/Dialogue';
 import {emptyChart} from '../redux/actions/chartActions';
 import firebase from '../utils/firebase';
+import Loader from '../Component/Loader';
 class SavedCards extends Component {
   state = {
     cards: [],
@@ -204,11 +205,7 @@ class SavedCards extends Component {
       <ScrollView
         style={styles.container}
         contentContainerStyle={{flexGrow: 1}}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{color: '#fff'}}
-        />
+        <Loader isVisible  ={loading} />
         <View
           style={{
             height: 100,

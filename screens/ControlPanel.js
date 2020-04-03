@@ -62,16 +62,16 @@ class ControlPanel extends React.Component {
         <View  style = {{flex : 1, justifyContent : "center" ,}}>
           {/* <Image source = {require('../assets/logo.jpeg')}
              style = {{height : 300 , width : 300 , resizeMode : "contain"}} /> */}
-          {this.menuButtons('Blogs', 'Blog')}
-          {this.menuButtons('Profile', 'Profile')}
+          {/* {this.menuButtons('Blogs', 'Blog')} */}
+          {/* {this.menuButtons('Profile', 'Profile')} */}
           {/* {this.menuButtons('BLOG', 'Blog', true)} */}
-          {this.menuButtons('Messages', 'Messages')}
+          {/* {this.menuButtons('Messages', 'Messages')} */}
           {/* {this.menuButtons('MY ADDRESSES' , 'MyAddress')} */}
           {/* {this.menuButtons('ADD PHOTO' , 'AddPhoto')} */}
-          {this.menuButtons('Post Blog', 'PostBlog')}
+          {/* {this.menuButtons('Post Blog', 'PostBlog')} */}
           {this.menuButtons('My Orders', 'MyOrders')}
-          {this.menuButtons('Shop', 'Shop')}
-          {this.menuButtons('Search', 'SearchUsers')}
+          {/* {this.menuButtons('Shop', 'Shop')} */}
+          {/* {this.menuButtons('Search', 'SearchUsers')} */}
           {this.menuButtons('Add Product', 'AddProduct')}
           {this.menuButtons('Select Blog', 'SelectBlog')}
           {/* {this.menuButtons('Privacy', 'Privacy')} */}

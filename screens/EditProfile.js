@@ -28,6 +28,7 @@ import Text from '../Component/Text'
 import CustomButton from '../Component/Button';
 import CustomHeader from '../Component/header';
 import {themeColor, pinkColor} from '../Constant';
+import Loader from '../Component/Loader'
 
 class EditProfile extends React.Component {
   constructor(props) {
@@ -154,11 +155,7 @@ class EditProfile extends React.Component {
         stickyHeaderIndices={[0]}
         style={{backgroundColor: '#323643', flex: 1}}>
         <CustomHeader navigation={navigation} title={'Edit PROFILE'} />
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{color: '#fff'}}
-        />
+        <Loader isVisible = {loading} />
         <View
           style={{
             alignSelf: 'center',

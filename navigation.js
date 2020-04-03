@@ -320,16 +320,8 @@ const MainTabs = createBottomTabNavigator({
     keyboardHidesTabBar: true,
     tabStyle: { backgroundColor: themeColor  ,},
     activeTintColor : '#ff718d',
-    inactiveTintColor : '#fff'
+    inactiveTintColor : '#fff',
   },
-  // defaultNavigationOptions: ({ navigation }) => ({
-  //   tabBarVisible: navigation.state.key === 'Home' && navigation.state.routes[1] ? false : true
-  // })
-  // defaultNavigationOptions: ({ navigation ,  }) => ({
-  //     tabBarComponent: (props) => <BottomComponent
-  //       routeName={navigation.state.routeName}
-  //       {...props} />
-  //      }),
 });
 
 const MainDrawer = createDrawerNavigator({

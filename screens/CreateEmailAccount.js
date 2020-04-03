@@ -17,7 +17,7 @@ import firebase from '../utils/firebase';
 import firebaseLib from 'react-native-firebase';
 import { loginUser } from '../redux/actions/authActions';
 import Spinner from 'react-native-loading-spinner-overlay';
-
+import Loader from '../Component/Loader'
 const height = Dimensions.get('screen').height
 const marginTop = height - 480 > 25 ? (height - 475) / 2 : 0
 class EmailAccount extends React.Component {
@@ -98,11 +98,8 @@ class EmailAccount extends React.Component {
     } = this.state;
     return (
       <ScrollView style={{ backgroundColor: '#323643', flex: 1 }}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
+                  <Loader isVisible = {loading} />
+
         <CustomHeader navigation={navigation} title={'Sign Up'} />
         <View
           style={{

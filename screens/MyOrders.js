@@ -22,6 +22,7 @@ import firebaseLib from 'react-native-firebase';
 import { connect } from 'react-redux';
 import firebase from '../utils/firebase';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Loader from '../Component/Loader'
 
 let screenHeight = Dimensions.get('screen').height
 class MyOrders extends React.Component {
@@ -116,11 +117,7 @@ class MyOrders extends React.Component {
         stickyHeaderIndices={[0]}
         style={{ backgroundColor: '#323643', flex: 1 }}>
         <CustomHeader navigation={navigation} title={'My Orders'} />
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
+       <Loader isVisible  = {loading} />
         {
           myorders.length === 0 ?
             <View style={{

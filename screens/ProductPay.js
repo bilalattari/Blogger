@@ -17,7 +17,7 @@ import Button from '../Component/Button'
 import { themeColor, pinkColor } from '../Constant';
 import firebase from '../utils/firebase';
 import { emptyChart } from '../redux/actions/chartActions';
-
+import Loader from '../Component/Loader'
 const stripe = require('stripe-client')(
   'pk_test_CoqYQbVZ6tJwY9dFWN7UTfin00QpVQsX20',
 );
@@ -321,11 +321,8 @@ class ProductPay extends Component {
       <ScrollView
         style={styles.container}
         contentContainerStyle={{ flexGrow: 1 }}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
+                <Loader isVisible = {loading} />
+
         <View
           style={{
             height: 100,

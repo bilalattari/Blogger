@@ -18,6 +18,7 @@ import CustomHeader from '../Component/header';
 import CustomButton from '../Component/Button';
 import firebase from '../utils/firebase';
 import { themeColor, pinkColor } from '../Constant';
+import Loader from '../Component/Loader';
 
 class SearchUsers extends Component {
   constructor(props) {
@@ -145,11 +146,7 @@ class SearchUsers extends Component {
         stickyHeaderIndices={[0]}
         style={{ backgroundColor: '#323643', flex: 1 }}>
         <CustomHeader title={'Search'} navigation={navigation} />
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
+        <Loader isVisible = {loading} />
         <View style={{ flexDirection: "row" }}>
           <View style={{ flex: 4 }}>
             <SearchBar

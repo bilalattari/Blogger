@@ -22,6 +22,8 @@ import {
 } from '@react-native-community/google-signin';
 import { Icon, Input, Button } from 'react-native-elements'
 import { SafeAreaView } from 'react-navigation';
+import Loader from '../Component/Loader'
+
 const height = Dimensions.get('screen').height
 const marginTop = height - 420 > 25 ? (height - 425) / 1.4 : 0
 class Login extends React.Component {
@@ -173,11 +175,7 @@ class Login extends React.Component {
     const { email, password, loading } = this.state
     return (
       <SafeAreaView style={{ backgroundColor: '#323643', flex: 1 }}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
+       <Loader isVisible = {loading} />
         {/* <View style={{
           height: 100, flexDirection: 'row', alignItems: 'center',
           justifyContent: 'space-between', marginHorizontal: 15,

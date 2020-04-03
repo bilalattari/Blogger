@@ -31,6 +31,7 @@ import ControlPanel from '../screens/ControlPanel';
 import Drawer from 'react-native-drawer';
 import { themeColor, pinkColor } from '../Constant';
 import { NavigationEvents } from 'react-navigation';
+import Loader from '../Component/Loader'
 const dimensions = Dimensions.get('window');
 const windowHeight = dimensions.height;
 const windowScreen = dimensions.width;
@@ -63,7 +64,7 @@ class Blog extends React.Component {
     }
     this.getBlogs()
     this.props.navigation.addListener('didFocus', () => this.getBlogs())
-    this.props.navigation.addListener('didBlur', () => this.closeControlPanel())
+    // this.props.navigation.addListener('didBlur', () => this.closeControlPanel())
   }
   getBlogs = async () => {
     // this.setState({ loading: true });
@@ -530,11 +531,8 @@ class Blog extends React.Component {
               onPress={() => this.openControlPanel()}
             />
           )}
-          <Spinner
-            visible={loading}
-            textContent={'Loading...'}
-            textStyle={{ color: '#fff' }}
-          />
+                         <Loader isVisible = {loading} />
+
           {isBlogs && !!usersData.length && (
             <FlatList
               data={blogs}

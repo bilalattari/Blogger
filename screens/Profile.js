@@ -22,6 +22,8 @@ import Video from 'react-native-video';
 import VideoPlayer from 'react-native-video-controls';
 import { themeColor, pinkColor } from '../Constant';
 import firebaseLib from 'react-native-firebase';
+import Loader from '../Component/Loader'
+
 class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -44,10 +46,12 @@ class Profile extends React.Component {
     this.decideUser();
     const { userObj, navigation } = this.props;
     let { userId } = userObj;
-    if (this.props.navigation.state.params.otherUser) {
-      userId = this.props.navigation.state.params.otherUser.userId;
-      if (userObj.following.indexOf(userId) !== -1) {
-        this.setState({ isFollowed: true });
+    if (this.props.navigation.state.params) {
+      if (this.props.navigation.state.params.otherUser) {
+        userId = this.props.navigation.state.params.otherUser.userId;
+        if (userObj.following.indexOf(userId) !== -1) {
+          this.setState({ isFollowed: true });
+        }
       }
     }
     const db = firebaseLib.firestore();
@@ -58,7 +62,6 @@ class Profile extends React.Component {
         .collection('Blog')
         .where('userId', '==', userId)
         .get();
-
       userBlogs = userBlogs.docs.forEach(doc => blogs.push(doc.data()));
       this.setState({ blogs, loading: false });
     } catch (e) {
@@ -165,7 +168,7 @@ class Profile extends React.Component {
     const { navigation, userObj } = this.props;
     let userData = '';
     if (!!userObj.userId) {
-      if (navigation.state.params.otherUser) {
+      if (navigation.state.params && navigation.state.params.otherUser) {
         userData = navigation.state.params.otherUser;
       } else {
         userData = newData ? newData : userObj;
@@ -195,15 +198,13 @@ class Profile extends React.Component {
     }
     let { comments, blogs, loading, isFollowed, userData } = this.state;
     const { userName, followers, following, userId, photoUrl } = userData;
+
     return (
       <ScrollView
         stickyHeaderIndices={[0]}
         style={{ backgroundColor: '#323643', flex: 1 }}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
+        
+        <Loader isVisible = {loading} />
         <CustomHeader
           title={'PROFILE'}
           navigation={navigation} />

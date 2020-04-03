@@ -125,19 +125,19 @@ class Chat extends React.Component {
           />}
         </ScrollView>
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={{ width: '14%', }}>
+          {/* <TouchableOpacity style={{ width: '14%', }}>
             <Icon type={'font-awesome'} name={'camera'}
               color={'#fff'} containerStyle={{ alignSelf: 'center' }} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TextInput placeholder={'Say Something'} placeholderTextColor={'grey'}
             style={{
-              width: '72%', backgroundColor: '#fff', color: pinkColor,
+              width: '81%', backgroundColor: '#fff', color: pinkColor,
               height: 40, borderRadius: 7, padding: 6
             }}
             onChangeText = {(message) => this.setState({message})}
             value={message}
             />
-          <TouchableOpacity style={{ width: '13%', }} onPress={() => this.sendMessage()}>
+          <TouchableOpacity style={{ width: '16%', }} onPress={() => this.sendMessage()}>
             <Icon type={'font-awesome'} name={'arrow-right'} color={'#fff'} containerStyle={{ alignSelf: 'center' }} />
           </TouchableOpacity>
         </View>

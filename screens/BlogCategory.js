@@ -21,6 +21,7 @@ import CustomHeader from '../Component/header';
 import Drawer from 'react-native-drawer';
 import firebase from '../utils/firebase';
 import { themeColor, pinkColor } from '../Constant';
+import Loader from '../Component/Loader'
 
 
 class BlogCategory extends React.Component {
@@ -83,12 +84,8 @@ class BlogCategory extends React.Component {
     return (
       <ScrollView style={{ backgroundColor: '#323643', flex: 1 }}>
         <CustomHeader navigation={navigation} title={'BLOG CATEGORY'} />
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{ color: '#fff' }}
-        />
-        <View style={{ marginHorizontal: 15, padding: 4 }}>
+        <Loader isVisible = {loading} />
+                <View style={{ marginHorizontal: 15, padding: 4 }}>
           <Text
             style={{
               color: '#fff',

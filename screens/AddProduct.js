@@ -11,6 +11,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import CustomButton from '../Component/Button';
 import {themeColor, pinkColor} from '../Constant';
 import firebase from '../utils/firebase';
+import Loader from '../Component/Loader'
 
 class AddProduct extends Component {
   state = {
@@ -129,11 +130,7 @@ class AddProduct extends Component {
       <ScrollView
         style={styles.container}
         contentContainerStyle={{flexGrow: 1}}>
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{color: '#fff'}}
-        />
+               <Loader isVisible = {loading} />
 
         <View
           style={{
