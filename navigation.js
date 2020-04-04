@@ -41,7 +41,7 @@ import SavedCards from './screens/SavedCards'
 import SearchUsers from './screens/SearchUsers'
 import Comments from './screens/Comments'
 import { Icon } from 'react-native-elements'
-import { themeColor , pinkColor } from './Constant/index'
+import { themeColor, pinkColor } from './Constant/index'
 
 const AuthStack = createStackNavigator({
   Landing: {
@@ -281,21 +281,24 @@ const MainTabs = createBottomTabNavigator({
     screen: HomeStack,
     navigationOptions: {
       title: "Blogs",
-      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'} type={'material-community'} name={'blogger'} color={tintColor} />
+      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'}
+        type={'material-community'} name={'blogger'} color={tintColor} />
     },
   },
   Search: {
     screen: SearchStack,
     navigationOptions: {
       title: "Search",
-      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'} type={'font-awesome'} name={'search'} color={tintColor} />
+      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'}
+        type={'font-awesome'} name={'search'} color={tintColor} />
     },
   },
   PostBlog: {
     screen: PostBlogStack,
     navigationOptions: {
       title: "Post Blog",
-      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'} type={'font-awesome'} name={'pencil'} color={tintColor} />
+      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'}
+        type={'font-awesome'} name={'pencil'} color={tintColor} />
 
     },
   },
@@ -303,14 +306,16 @@ const MainTabs = createBottomTabNavigator({
     screen: ShoppingStack,
     navigationOptions: {
       title: "Shop",
-      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'} type={'font-awesome'} name={'shopping-cart'} color={tintColor} />
+      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'}
+        type={'font-awesome'} name={'shopping-cart'} color={tintColor} />
     },
   },
   Profile: {
     screen: ProfileStack,
     navigationOptions: {
       title: "Profile",
-      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'} type={'feather'} name={'user'} color={tintColor} />
+      tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'}
+        type={'feather'} name={'user'} color={tintColor} />
     },
   },
 }, {
@@ -318,10 +323,11 @@ const MainTabs = createBottomTabNavigator({
   headerMode: 'none',
   tabBarOptions: {
     keyboardHidesTabBar: true,
-    tabStyle: { backgroundColor: themeColor  ,},
-    activeTintColor : '#ff718d',
-    inactiveTintColor : '#fff',
+    tabStyle: { backgroundColor: themeColor },
+    activeTintColor: '#ff718d',
+    inactiveTintColor: '#fff',
   },
+  
 });
 
 const MainDrawer = createDrawerNavigator({

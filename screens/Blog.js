@@ -63,7 +63,7 @@ class Blog extends React.Component {
       this.props.changeFontFamily(this.props.userObj.fontFamily)
     }
     this.getBlogs()
-    this.props.navigation.addListener('didFocus', () => this.getBlogs())
+    // this.props.navigation.addListener('didFocus', () => this.getBlogs())
     // this.props.navigation.addListener('didBlur', () => this.closeControlPanel())
   }
   getBlogs = async () => {

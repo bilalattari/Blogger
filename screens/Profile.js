@@ -7,7 +7,6 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  Text,
   ScrollView,
   Platform,
 } from 'react-native';
@@ -23,6 +22,7 @@ import VideoPlayer from 'react-native-video-controls';
 import { themeColor, pinkColor } from '../Constant';
 import firebaseLib from 'react-native-firebase';
 import Loader from '../Component/Loader'
+import Text from '../Component/Text'
 
 class Profile extends React.Component {
   constructor(props) {
@@ -71,8 +71,8 @@ class Profile extends React.Component {
 
   statsNumber = (heading, number) => (
     <View>
-      <Text style={styles.heading}>{heading}</Text>
-      <Text style={styles.number}>{number}</Text>
+      <Text text={heading} style={styles.heading} />
+      <Text text={number} style={styles.number} />
     </View>
   );
 
@@ -125,7 +125,7 @@ class Profile extends React.Component {
     const FieldValue = firebaseLib.firestore.FieldValue;
 
     const {
-      userObj: { userId, userName, photoUrl },
+      userObj: { userId, userName, photoUrl , userDescription },
       navigation,
     } = this.props;
     const { userData } = this.state;
@@ -202,9 +202,9 @@ class Profile extends React.Component {
     return (
       <ScrollView
         stickyHeaderIndices={[0]}
-        style={{ backgroundColor: '#323643', flex: 1 }}>
-        
-        <Loader isVisible = {loading} />
+        style={{ backgroundColor: '#323643', flex: 1, }}>
+
+        <Loader isVisible={loading} />
         <CustomHeader
           title={'PROFILE'}
           navigation={navigation} />
@@ -226,10 +226,8 @@ class Profile extends React.Component {
                   />
                 )}
             </View>
-            <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold', marginTop: 8 }}>
-              {userName}
-            </Text>
-            <Text style={{ color: '#ccc', }}>Graphic Designer</Text>
+            <Text text={userName} style={{ fontSize: 18, fontWeight: 'bold', marginTop: 8 }} />
+            <Text text={'Graphic Designer'} style={{ color: '#ccc', }} />
           </View>
           <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 25 }}>
             {!!userId && userId !== userObj.userId && (
@@ -268,19 +266,29 @@ class Profile extends React.Component {
           {!!userData && this.statsNumber('FOLLOWING', following.length)}
           {!!userData && this.statsNumber('FOLLOWER', followers.length)}
         </View>
+        <View style={{
+          borderBottomColor: 'grey',
+          borderBottomWidth: 3, padding: 8
+        }}>
+          <Text text={"DESCRIPTION"} align={"left"} style={{
+            margin: 6, fontWeight: "bold", color: "#fff",
+            fontSize: 20, letterSpacing: 1, paddingRight: 12
+          }} />
 
-
-        <Text style={{
-          margin: 6, fontWeight: "bold", color: "#fff",
-          fontSize: 20, letterSpacing: 1
-        }}>BLOGS</Text>
+          <Text text={userObj.userDescription ? userObj.userDescription :  userId === userObj.userId ? "Please enter your description" : "User didn't added any description"} align={'left'} color={'#ccc'} font={18} />
+        </View>
+        <Text text={'BLOGS'} align={"left"} style={{
+          padding: 6, fontWeight: "bold", color: "#fff",
+          fontSize: 20, letterSpacing: 1, paddingLeft: 12
+        }} />
         <View
           style={{
             backgroundColor: themeColor,
             flexWrap: 'wrap',
+            zIndex: -1200,
             flexDirection: 'row',
           }}>
-          <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
+          <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', zIndex: -1200 }}>
             {!!blogs.length &&
               blogs.map((data, index) => {
                 return (

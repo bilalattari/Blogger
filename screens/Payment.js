@@ -199,7 +199,7 @@ class Payment extends React.Component {
             <View style={{flex: 1, justifyContent: 'space-around'}}>
               <ParallaxImage
                 source={item.illustration}
-                containerStyle={{height:screenHeight/2.1 , borderRadius : 15}}
+                containerStyle={{height:screenHeight/2.7 , borderRadius : 15}}
                 style={{borderRadius: 10}}
                 parallaxFactor={0.4}
                 {...parallaxProps}
@@ -210,7 +210,8 @@ class Payment extends React.Component {
                     alignSelf: 'center',
                     fontSize: 22,
                     fontWeight: 'bold',
-                    color: '#fff',
+                    color: pinkColor,
+                    marginVertical  : 6
                   }}>
                   {item.type}
                 </Text>
@@ -220,6 +221,7 @@ class Payment extends React.Component {
                     fontSize: 30,
                     fontWeight: 'bold',
                     color: '#fff',
+                    marginVertical  : 4
                   }}>
                   {item.rate}
                 </Text>

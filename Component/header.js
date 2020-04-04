@@ -31,34 +31,38 @@ export default CustomHeader = props => (
         },
       }}
       rightComponent={
-        props.icon ? (
-          <TouchableOpacity
-          style={{ height: 60, width: 40, justifyContent: 'center', alignItems: "center" }}
-          onPress={()=>props.navigation.navigate('Feedback') }>
-            <Icon type={'font-awesome'} name={'bell-o'} color={'#fff'} style = {{paddingTop : 12}}
-              size={20}  />
-          </TouchableOpacity>
-        ) :
-          props.shop ? (
+        props.customImage ?
+          <Image source={{ uri: props.customImage }}
+            style={{ height: 50, width: 50, borderRadius: 125 , marginTop : 12 ,
+               marginRight : 8 , resizeMode : "contain" }} /> :
+          props.icon ? (
             <TouchableOpacity
-              onPress={() => props.navigation.navigate('Yourchart')}>
-              <Image
-                source={require('../assets/cart.png')}
-                style={{ width: 30, height: 30 }}
-              />
+              style={{ height: 60, width: 40, justifyContent: 'center', alignItems: "center" }}
+              onPress={() => props.navigation.navigate('Feedback')}>
+              <Icon type={'font-awesome'} name={'bell-o'} color={'#fff'} style={{ paddingTop: 12 }}
+                size={20} />
             </TouchableOpacity>
-          ) : props.home && props.bookmark ? (
-            <Icon
-              type={'font-awesome'}
-              name={'bookmark-o'}
-              color={'#fff'}
-              size={20}
-            />
-          ) : props.home && props.bookmark === undefined ? (
-            <Icon type={'font-awesome'} name={'ellipsis-h'} color={'#fff'} />
-          ) : props.rightIcon ? (
-            <Icon type={'feather'} name={'user-plus'} color={'#fff'} size={20} />
-          ) : null
+          ) :
+            props.shop ? (
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate('Yourchart')}>
+                <Image
+                  source={require('../assets/cart.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              </TouchableOpacity>
+            ) : props.home && props.bookmark ? (
+              <Icon
+                type={'font-awesome'}
+                name={'bookmark-o'}
+                color={'#fff'}
+                size={20}
+              />
+            ) : props.home && props.bookmark === undefined ? (
+              <Icon type={'font-awesome'} name={'ellipsis-h'} color={'#fff'} />
+            ) : props.rightIcon ? (
+              <Icon type={'feather'} name={'user-plus'} color={'#fff'} size={20} />
+            ) : null
       }
     />
   </View>

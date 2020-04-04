@@ -15,7 +15,7 @@ export default Loader = ({isVisible}) => (
     }}>
         <View style={{
             height: 100, width: 100, backgroundColor: "#fff", borderRadius: 12,
-            justifyContent: "center", alignItems: "center"
+            justifyContent: "center", alignItems: "center" , zIndex : 1200,
         }}>
             <ActivityIndicator color = {'grey'} size = {'large'}  />
         </View>

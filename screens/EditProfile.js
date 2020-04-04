@@ -41,6 +41,7 @@ class EditProfile extends React.Component {
       showDialogue: false,
       inputDialogueShow: false,
       password: '',
+      userDescription : "",
       fontFamily : "",
       number: null
     };
@@ -51,8 +52,8 @@ class EditProfile extends React.Component {
 
   componentDidMount() {
     const {userObj} = this.props;
-    const {userName, photoUrl, country} = userObj;
-    this.setState({userName, photoUrl, country});
+    const {userName, photoUrl, country , userDescription} = userObj;
+    this.setState({userName, photoUrl, country , userDescription});
   }
   galleryPermissionAndroid() {
     return request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
@@ -84,16 +85,18 @@ class EditProfile extends React.Component {
       userObj: {userId},
       navigation,
     } = this.props;
-    let {photoUrl, userName, country, number , fontFamily} = this.state;
+    let {photoUrl, userName, country, number , fontFamily , userDescription} = this.state;
     this.setState({loading: true});
     if (photoUrl && !photoUrl.includes('https')) {
       photoUrl = await firebase.uploadImage(photoUrl, userId);
     }
+    console.log(userDescription, 'userDescription')
     const data = {
       photoUrl,
       userName,
       country,
       fontFamily,
+      userDescription,
       number
     };
     try {
@@ -144,6 +147,7 @@ class EditProfile extends React.Component {
       userName,
       photoUrl,
       country,
+      userDescription,
       loading,
       showDialogue,
       inputDialogueShow,
@@ -187,6 +191,16 @@ class EditProfile extends React.Component {
           inputContainerStyle={styles.inputContainer}
           value={userName}
           onChangeText={userName => this.setState({userName})}
+        />
+         <Input
+          placeholder={'Please Enter Your Description'}
+          containerStyle={{width: '100%'}}
+          inputStyle={[styles.inputStyle , {fontFamily : this.props.fontFamily}]}
+          placeholderTextColor={'#bbb'}
+          inputContainerStyle={[styles.inputContainer , {height : 120}]}
+          multiline = {true}
+          value={userDescription}
+          onChangeText={userDescription => this.setState({userDescription})}
         />
         <Input
           placeholder={'Country'}
