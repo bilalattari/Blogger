@@ -23,7 +23,12 @@ import { themeColor, pinkColor } from '../Constant';
 import firebaseLib from 'react-native-firebase';
 import Loader from '../Component/Loader'
 import Text from '../Component/Text'
-
+import ControlPanel from '../screens/ControlPanel';
+import Drawer from 'react-native-drawer';
+import { NavigationEvents } from 'react-navigation';
+import TrackPlayer, { ProgressComponent } from 'react-native-track-player';
+import { TrackStatus } from './PostBlog'
+TrackPlayer.setupPlayer();
 class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -31,6 +36,7 @@ class Profile extends React.Component {
       comments: false,
       blogs: [],
       loading: true,
+      AudioStatus : true,
       isFollowed: false,
       userData: '',
       controls: false,
@@ -46,14 +52,17 @@ class Profile extends React.Component {
     this.decideUser();
     const { userObj, navigation } = this.props;
     let { userId } = userObj;
-    if (this.props.navigation.state.params) {
-      if (this.props.navigation.state.params.otherUser) {
-        userId = this.props.navigation.state.params.otherUser.userId;
-        if (userObj.following.indexOf(userId) !== -1) {
-          this.setState({ isFollowed: true });
+    this.props.navigation.addListener('didFocus', () => {
+      if (this.props.navigation.state.params) {
+        console.log('other usersssssssssssssssssssssssssssssssssssss')
+        if (this.props.navigation.state.params.otherUser) {
+          userId = this.props.navigation.state.params.otherUser.userId;
+          if (userObj.following.indexOf(userId) !== -1) {
+            this.setState({ isFollowed: true });
+          }
         }
       }
-    }
+    })
     const db = firebaseLib.firestore();
     const blogs = [];
 
@@ -75,7 +84,53 @@ class Profile extends React.Component {
       <Text text={number} style={styles.number} />
     </View>
   );
-
+  togglePlayback = async (url) => {
+    const currentTrack = await TrackPlayer.getCurrentTrack();
+    if (currentTrack == null) {
+      TrackPlayer.reset();
+      await TrackPlayer.add({ url: url });
+      TrackPlayer.play();
+    } else {
+      if (await TrackPlayer.getState() === 2) {
+        TrackPlayer.play();
+      } else {
+        TrackPlayer.pause();
+      }
+    }
+    this.UpdateTrackUI();
+  }
+  // UpdateTrack = async () => {
+  //   var current_id = await TrackPlayer.getCurrentTrack();
+  //   if (current_id) {
+  //     var track = await TrackPlayer.getTrack(current_id);
+  //     this.setState({
+  //       CurrentPlayTitle: this.state.CurrentPlayTitle ? this.state.CurrentPlayTitle : '',
+  //       CurrentPlayArtist: this.state.CurrentPlayArtist ? this.state.CurrentPlayArtist : '',
+  //       CurrentPlayImage: { uri: this.state.audioPath },
+  //     });
+  //   } else {
+  //     this.setState({
+  //       CurrentPlayTitle: this.state.CurrentPlayTitle ? this.state.CurrentPlayTitle : '',
+  //       CurrentPlayArtist: this.state.CurrentPlayArtist ? this.state.CurrentPlayArtist : '',
+  //       CurrentPlayImage: { uri: this.state.audioPath },
+  //     });
+  //   }
+  // }
+  UpdateTrackUI = async () => {
+    if (await TrackPlayer.getState() == 2) {
+      this.setState({
+        AudioStatus: true
+      });
+    } else if (await TrackPlayer.getState() == 3) {
+      this.setState({
+        AudioStatus: false
+      });
+    } else if (await TrackPlayer.getState() == 6) {
+      this.setState({
+        AudioStatus: false
+      });
+    }
+  }
   async follow(otherUserId) {
     const db = firebaseLib.firestore();
     const FieldValue = firebaseLib.firestore.FieldValue;
@@ -125,7 +180,7 @@ class Profile extends React.Component {
     const FieldValue = firebaseLib.firestore.FieldValue;
 
     const {
-      userObj: { userId, userName, photoUrl , userDescription },
+      userObj: { userId, userName, photoUrl, userDescription },
       navigation,
     } = this.props;
     const { userData } = this.state;
@@ -189,9 +244,14 @@ class Profile extends React.Component {
     blog.userObj = userData;
     navigation.navigate('BlogDetail', { data: blog });
   }
-
+  closeControlPanel = () => {
+    this._drawer.close();
+  };
+  openControlPanel = () => {
+    this._drawer.open();
+  };
   render() {
-    const { navigation, userObj } = this.props;
+    const { navigation, userObj, fontfamily } = this.props;
     if (!userObj) {
       navigation.navigate('Auth');
       return null;
@@ -200,157 +260,203 @@ class Profile extends React.Component {
     const { userName, followers, following, userId, photoUrl } = userData;
 
     return (
-      <ScrollView
-        stickyHeaderIndices={[0]}
-        style={{ backgroundColor: '#323643', flex: 1, }}>
+      <Drawer
+        ref={ref => (this._drawer = ref)}
+        type="overlay"
+        tapToClose={true}
+        openDrawerOffset={0.2} // 20% gap on the right side of drawer
+        panCloseMask={0.2}
+        closedDrawerOffset={-3}
+        styles={styles.drawer}
+        tweenHandler={ratio => ({
+          main: { opacity: (2 - ratio) / 2 },
+        })}
+        content={<ControlPanel />}>
+        <NavigationEvents onDidBlur={() => this.closeControlPanel()} />
+        <ScrollView
+          stickyHeaderIndices={[0]}
+          style={{ backgroundColor: '#323643', flex: 1, }}>
 
-        <Loader isVisible={loading} />
-        <CustomHeader
+          <Loader isVisible={loading} />
+          <CustomHeader
+            home
+            title={'PROFILE'}
+            // icon={true}
+            navigation={navigation}
+            onPress={() => this.openControlPanel()}
+          />
+          {/* <CustomHeader
           title={'PROFILE'}
-          navigation={navigation} />
-        <View style={{
-          flexDirection: "row", justifyContent: "space-around",
-          marginVertical: 25
-        }}>
-          <View style={{ alignSelf: 'center', alignItems: 'center' }}>
-            <View style={styles.imageWrapper}>
-              {photoUrl ? (
-                <Image
-                  source={{ uri: photoUrl }}
-                  style={[styles.imageStyle, { borderRadius: 125 }]}
-                />
-              ) : (
+          navigation={navigation} /> */}
+          <View style={{
+            flexDirection: "row", justifyContent: "space-around",
+            marginVertical: 25
+          }}>
+            <View style={{ alignSelf: 'center', alignItems: 'center' }}>
+              <View style={styles.imageWrapper}>
+                {photoUrl ? (
                   <Image
-                    source={require('../assets/avatar.png')}
+                    source={{ uri: photoUrl }}
                     style={[styles.imageStyle, { borderRadius: 125 }]}
                   />
-                )}
-            </View>
-            <Text text={userName} style={{ fontSize: 18, fontWeight: 'bold', marginTop: 8 }} />
-            <Text text={'Graphic Designer'} style={{ color: '#ccc', }} />
-          </View>
-          <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 25 }}>
-            {!!userId && userId !== userObj.userId && (
-              <View>
-                {isFollowed ? (
-                  <CustomButton
-                    title="Following"
-                    backgroundColor={pinkColor}
-                    width={110}
-                    height={48}
-                    onPress={() => this.unFollow(userId)}
-                  />
                 ) : (
-                    <CustomButton
-                      title="Follow"
-                      backgroundColor={pinkColor}
-                      width={110}
-                      height={48}
-                      onPress={() => this.follow(userId)}
+                    <Image
+                      source={require('../assets/avatar.png')}
+                      style={[styles.imageStyle, { borderRadius: 125 }]}
                     />
                   )}
               </View>
-            )}
-            {userObj.userId === userId && (
-              <TouchableOpacity style={{
-                height: 50, width: 50, borderRadius: 125, justifyContent: "center", alignItems: "center",
-                borderColor: '#ccc', borderWidth: 0.5, marginLeft: 4
-              }} onPress={() => this.props.navigation.navigate('EditProfile')}>
-                <Icon type={'material-community'} name={'pencil-outline'}
-                  color={"#ccc"} size={30} />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-        <View style={styles.statsView}>
-          {!!userData && this.statsNumber('FOLLOWING', following.length)}
-          {!!userData && this.statsNumber('FOLLOWER', followers.length)}
-        </View>
-        <View style={{
-          borderBottomColor: 'grey',
-          borderBottomWidth: 3, padding: 8
-        }}>
-          <Text text={"DESCRIPTION"} align={"left"} style={{
-            margin: 6, fontWeight: "bold", color: "#fff",
-            fontSize: 20, letterSpacing: 1, paddingRight: 12
-          }} />
-
-          <Text text={userObj.userDescription ? userObj.userDescription :  userId === userObj.userId ? "Please enter your description" : "User didn't added any description"} align={'left'} color={'#ccc'} font={18} />
-        </View>
-        <Text text={'BLOGS'} align={"left"} style={{
-          padding: 6, fontWeight: "bold", color: "#fff",
-          fontSize: 20, letterSpacing: 1, paddingLeft: 12
-        }} />
-        <View
-          style={{
-            backgroundColor: themeColor,
-            flexWrap: 'wrap',
-            zIndex: -1200,
-            flexDirection: 'row',
-          }}>
-          <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', zIndex: -1200 }}>
-            {!!blogs.length &&
-              blogs.map((data, index) => {
-                return (
-                  <TouchableOpacity
-                    style={{ height: 120, width: 125, margin: 2, }}
-                    onPress={() => this.navigateToDetails(data, userData)}
-                  >
-                    <Image
-                      source={{ uri: data.imageUrl }}
-                      style={{
-                        height: '100%',
-                        width: '100%',
-                        borderRadius: 5,
-                        resizeMode: 'stretch',
-                      }}
+              <Text fontFamily={fontfamily} text={userName} style={{ fontSize: 18, fontWeight: 'bold', marginTop: 8 }} />
+              <Text fontFamily={fontfamily} text={'Graphic Designer'} style={{ color: '#ccc', }} />
+            </View>
+            <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 25 }}>
+              {!!userId && userId !== userObj.userId && (
+                <View>
+                  {isFollowed ? (
+                    <CustomButton
+                      title="Following"
+                      backgroundColor={pinkColor}
+                      width={110}
+                      height={48}
+                      onPress={() => this.unFollow(userId)}
                     />
-                    {!!data.videoUrl && (
-                      <View
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          marginVertical: 10,
-                        }}>
-                        {/* {Platform.OS === 'ios' ? (
-                        <Video
-                          source={{uri: data.videoUrl}}
-                          style={{width: '32%', height: 110}}
-                          paused={true}
-                          pictureInPicture={true}
-                          controls={true}
-                          onLoad={() => this.videoIsReady()}
-                          ref={ref => (this.videoRef = ref)}
-                        />
-                      ) : (
-                        <VideoPlayer
-                          source={{uri: data.videoUrl}}
-                          videoStyle={{
-                            width: '100%',
-                            height: 160,
-                            backgroundColor: 'red'
-                          }}
-                          style={{
-                            width: 180,
-                            height: 160,
-                          }}
-                          disableVolume={true}
-                          fullscreen={false}
-                          paused={this.state.paused}
-                          onLoad={() => this.videoIsReady()}
-                          disablePlayPause={this.state.hidePlayPause}
-                          disableSeekbar={this.state.hideSeekbar}
-                          disableBack={true}
-                        />
-                      )} */}
-                      </View>
+                  ) : (
+                      <CustomButton
+                        title="Follow"
+                        backgroundColor={pinkColor}
+                        width={110}
+                        height={48}
+                        onPress={() => this.follow(userId)}
+                      />
                     )}
-                  </TouchableOpacity>
-                );
-              })}
+                </View>
+              )}
+              {userObj.userId === userId && (
+                <TouchableOpacity style={{
+                  height: 50, width: 50, borderRadius: 125, justifyContent: "center", alignItems: "center",
+                  borderColor: '#ccc', borderWidth: 0.5, marginLeft: 4
+                }} onPress={() => this.props.navigation.navigate('EditProfile')}>
+                  <Icon type={'material-community'} name={'pencil-outline'}
+                    color={"#ccc"} size={30} />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-        </View>
-      </ScrollView>
+          <View style={styles.statsView}>
+            {!!userData && this.statsNumber('FOLLOWING', following.length)}
+            {!!userData && this.statsNumber('FOLLOWER', followers.length)}
+          </View>
+          <View style={{
+            borderBottomColor: 'grey',
+            borderBottomWidth: 3, padding: 8
+          }}>
+            <Text fontFamily={fontfamily} text={"DESCRIPTION"} align={"left"} style={{
+              margin: 6, fontWeight: "bold", color: "#fff",
+              fontSize: 20, letterSpacing: 1, paddingRight: 12
+            }} />
+
+            <Text fontFamily={fontfamily} text={userObj.userDescription ? userObj.userDescription : userId === userObj.userId ? "Please enter your description" : "User didn't added any description"} align={'left'} color={'#ccc'} font={18} />
+          </View>
+          <Text text={'BLOGS'} align={"left"} style={{
+            padding: 6, fontWeight: "bold", color: "#fff",
+            fontSize: 20, letterSpacing: 1, paddingLeft: 12
+          }} />
+          <View
+            style={{
+              backgroundColor: themeColor,
+              flexWrap: 'wrap',
+              zIndex: -1200,
+              flexDirection: 'row',
+            }}>
+            <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', zIndex: -1200 }}>
+              {!!blogs.length &&
+                blogs.map((data, index) => {
+                  console.log(data.audioUrl, 'data.audioUrl+++++++++++++++++++++++++++')
+                  // if (data.audioUrl) {
+                  //   this.togglePlayback(data.audioUrl)
+                  // }
+                  // console.log(data.audioUrl, 'data.audioUrl')
+                  return (
+                    data.imageUrl || data.videoUrl !== "" || data.audioUrl ?
+                      <TouchableOpacity
+                        style={{ height: 120, width: 125, margin: 2, borderRadius: 7, overflow: "hidden" }}
+                        onPress={() => this.navigateToDetails(data, userData)}
+                      >
+                        {
+                          data.videoUrl !== "" ?
+                            <TouchableOpacity
+                              style={{ height: 120, width: 125, }}
+                              onPress={() => this.navigateToDetails(data, userData)}>
+                              {Platform.OS === 'ios' ? (
+                                <Video
+                                  source={{ uri: data.videoUrl }}
+                                  style={{
+                                    height: '100%',
+                                    width: '100%',
+                                  }}
+                                  paused={true}
+                                  pictureInPicture={true}
+                                  controls={true}
+                                  onLoad={() => this.videoIsReady()}
+                                  ref={ref => (this.videoRef = ref)}
+                                />
+                              ) : (
+                                  <VideoPlayer
+                                    source={{ uri: data.videoUrl }}
+                                    videoStyle={{
+                                      height: '100%',
+                                      width: '100%',
+                                    }}
+                                    disableFullscreen={true}
+                                    style={{
+                                      height: '100%',
+                                      width: '100%',
+                                    }}
+                                    disableVolume={true}
+                                    fullscreen={false}
+                                    paused={this.state.paused}
+                                    onLoad={() => this.videoIsReady()}
+                                    disablePlayPause={this.state.hidePlayPause}
+                                    disableSeekbar={this.state.hideSeekbar}
+                                    disableBack={true}
+                                  />
+                                )}
+                            </TouchableOpacity>
+                            :
+                            data.audioUrl ?
+                              <TouchableOpacity style={{
+                                flex: 1, height: 120, backgroundColor: '#000',
+                                width: 125, justifyContent: 'center'
+                              }}
+                                onPress={() => this.navigateToDetails(data, userData)}
+                              >
+                                <TrackStatus profile={true} navigation={this.props.navigation} />
+                                <TouchableOpacity onPress={() => this.togglePlayback(data.audioUrl)}
+                                  style={{
+                                    height: 40, width: 50, justifyContent: "center",
+                                    alignSelf: "center"
+                                  }} activeOpacity={1}>
+                                  <Icon type={'font-awesome'} name={this.state.AudioStatus ? 'play' : 'pause'}
+                                    color={'#fff'} size={14} />
+                                </TouchableOpacity>
+                              </TouchableOpacity> :
+                              <Image
+                                source={{ uri: data.imageUrl }}
+                                style={{
+                                  height: '100%',
+                                  width: '100%',
+                                  borderRadius: 5,
+                                  resizeMode: 'stretch',
+                                }}
+                              />
+                        }
+                      </TouchableOpacity> : null
+                  );
+                })}
+            </View>
+          </View>
+        </ScrollView>
+      </Drawer>
     );
   }
 }
@@ -394,6 +500,7 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     userObj: state.auth.user,
+    fontfamily: state.font.fontFamily
 
   };
 };

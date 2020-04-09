@@ -48,6 +48,10 @@ target 'Blogster' do
 
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
 
+  pod 'react-native-track-player', :path => '../node_modules/react-native-track-player'
+
+  pod 'react-native-music-control', :path => '../node_modules/react-native-music-control'
+
   target 'BlogsterTests' do
     inherit! :search_paths
     # Pods for testing

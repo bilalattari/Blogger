@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.tanguyantoine.react.MusicControl;
+import com.guichaguri.trackplayer.TrackPlayer;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import io.invertase.firebase.RNFirebasePackage;

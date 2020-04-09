@@ -96,7 +96,7 @@ class Login extends React.Component {
           followers: [],
           following: [],
           userPackage: 'none',
-          fontFamily : 'NotoSans-Regular',
+          fontFamily: 'NotoSans-Regular',
           userType: 'free',
           deleted: false,
           createdAt: Date.now(),
@@ -121,6 +121,7 @@ class Login extends React.Component {
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
+      this.setState({ loading: true })
       console.log(userInfo, 'userInfo')
       let value = (await GoogleSignin.getTokens({ idToken: userInfo.idToken }))
       const credential = FirebaseLib.auth.GoogleAuthProvider.credential(value.idToken);
@@ -133,7 +134,8 @@ class Login extends React.Component {
         userObj = response.data();
         this.props.loginUser(userObj)
         this.props.navigation.navigate('App')
-      }else{
+        this.setState({ loading: false })
+      } else {
         userObj = {
           userName: firebaseUserCredential.user.displayName.toLowerCase(),
           email: firebaseUserCredential.user.email,
@@ -143,14 +145,15 @@ class Login extends React.Component {
           following: [],
           userPackage: 'none',
           userType: 'free',
-          fontFamily : 'NotoSans-Regular',
+          fontFamily: 'NotoSans-Regular',
           deleted: false,
           createdAt: Date.now(),
           country: null
         }
         await firebase.setDocument('Users', googleUid, userObj)
         this.props.loginUser(userObj)
-        this.props.navigation.navigate('BlogCategory') 
+        this.props.navigation.navigate('BlogCategory')
+        this.setState({ loading: false })
       }
       // // console.log(credential, 'credential')
       // FirebaseLib.auth().signInWithCredential(credential).then((user) => {
@@ -158,6 +161,7 @@ class Login extends React.Component {
       // }).catch((err) => console.log(err))
 
     } catch (error) {
+      this.setState({ loading: false })
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
       } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -175,7 +179,7 @@ class Login extends React.Component {
     const { email, password, loading } = this.state
     return (
       <SafeAreaView style={{ backgroundColor: '#323643', flex: 1 }}>
-       <Loader isVisible = {loading} />
+        <Loader isVisible={loading} />
         {/* <View style={{
           height: 100, flexDirection: 'row', alignItems: 'center',
           justifyContent: 'space-between', marginHorizontal: 15,

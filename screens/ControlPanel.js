@@ -76,6 +76,8 @@ class ControlPanel extends React.Component {
           {this.menuButtons('Select Blog', 'SelectBlog')}
           {/* {this.menuButtons('Privacy', 'Privacy')} */}
           {this.menuButtons('Subscription', 'Payment')}
+          {this.menuButtons('Privacy Ploicy', 'Privacy')}
+          {this.menuButtons('Terms and Conditions', 'Terms')}
           {/* {this.menuButtons('Support' , 'Support')} */}
           <TouchableOpacity
             style={{

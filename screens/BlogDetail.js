@@ -26,6 +26,9 @@ import ControlPanel from '../screens/ControlPanel';
 import Drawer from 'react-native-drawer';
 import { themeColor, pinkColor } from '../Constant';
 import Text from '../Component/Text'
+import TrackPlayer, { ProgressComponent } from 'react-native-track-player';
+import { TrackStatus } from './PostBlog'
+TrackPlayer.setupPlayer();
 const dimensions = Dimensions.get('window');
 const windowHeight = dimensions.height;
 
@@ -35,7 +38,8 @@ class BlogDetail extends React.Component {
     this.state = {
       follow: false,
       fullScreenHeight: null,
-      loading: false
+      loading: false,
+      AudioStatus: true
     };
   }
   static navigationOptions = {
@@ -92,9 +96,40 @@ class BlogDetail extends React.Component {
   openControlPanel = () => {
     this._drawer.open();
   };
+  togglePlayback = async (url) => {
+    const currentTrack = await TrackPlayer.getCurrentTrack();
+    if (currentTrack == null) {
+      TrackPlayer.reset();
+      await TrackPlayer.add({ url: url});
+      TrackPlayer.play();
+    } else {
+      if (await TrackPlayer.getState() === 2) {
+        TrackPlayer.play();
+      } else {
+        TrackPlayer.pause();
+      }
+    }
+    this.UpdateTrackUI();
+  }
+ 
+  UpdateTrackUI = async () => {
+    if (await TrackPlayer.getState() == 2) {
+      this.setState({
+        AudioStatus: true
+      });
+    } else if (await TrackPlayer.getState() == 3) {
+      this.setState({
+        AudioStatus: false
+      });
+    } else if (await TrackPlayer.getState() == 6) {
+      this.setState({
+        AudioStatus: false
+      });
+    }
+  }
   render() {
     const { fullScreenHeight, loading } = this.state;
-    const { navigation,fontfamily, userObj: { userId } } = this.props;
+    const { navigation, fontfamily, userObj: { userId } } = this.props;
     const data = this.props.navigation.state.params.data;
     let { follow } = this.state;
     return (
@@ -111,33 +146,51 @@ class BlogDetail extends React.Component {
         })}
         content={<ControlPanel />}>
         <ScrollView style={{ backgroundColor: '#323643', flex: 1 }}>
-        <Loader isVisible = {loading} />
-
-          {!fullScreenHeight && (
-            <View>
-              <CustomHeader
-                title={'BLOG'}
-                navigation={navigation}
-                home={true}
-                onPress={() => this.openControlPanel()}
-                bookmark={true}
-              />
-              <View style={styles.title}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Image
-                    source={
-                      data.userObj.photoUrl
-                        ? { uri: data.userObj.photoUrl }
-                        : require('../assets/avatar.png')
-                    }
-                    style={styles.imageStyle}
-                  />
-                  <Text fontFamily = {fontfamily} text={data.userObj.userName} bold={true} />
-                </View>
-              
+          <Loader isVisible={loading} />
+          {/* {!fullScreenHeight && ( */}
+          <View>
+            <CustomHeader
+              title={'BLOG'}
+              navigation={navigation}
+              home={true}
+              onPress={() => this.openControlPanel()}
+              bookmark={true}
+            />
+            <View style={styles.title}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image
+                  source={
+                    data.userObj.photoUrl
+                      ? { uri: data.userObj.photoUrl }
+                      : require('../assets/avatar.png')
+                  }
+                  style={styles.imageStyle}
+                />
+                <Text fontFamily={fontfamily} text={data.userObj.userName} bold={true} />
               </View>
+
+            </View>
+          </View>
+          {/* )} */}
+
+          {!!data.audioUrl && (
+            <View style={{
+              flex: 1, height: 100, backgroundColor: '#000', marginVertical: 12,
+              width: '97%', justifyContent: 'center', alignSelf: "center", borderRadius: 12
+            }}
+            >
+              <TrackStatus navigation={this.props.navigation} />
+              <TouchableOpacity onPress={() => this.togglePlayback(data.audioUrl)}
+                style={{
+                  justifyContent: "center",
+                  alignSelf: "center", marginTop: 5
+                }} activeOpacity={1}>
+                <Icon type={'font-awesome'} name={this.state.AudioStatus ? 'play' : 'pause'}
+                  color={'#fff'} size={25} />
+              </TouchableOpacity>
             </View>
           )}
+
           {!!data.imageUrl && (
             <Image
               source={{ uri: data.imageUrl }}
@@ -166,11 +219,11 @@ class BlogDetail extends React.Component {
                     source={{ uri: data.videoUrl }}
                     videoStyle={{
                       width: '100%',
-                      height: fullScreenHeight ? fullScreenHeight : 180,
+                      height: fullScreenHeight ? fullScreenHeight : 250,
                     }}
                     style={{
                       width: '100%',
-                      height: fullScreenHeight ? fullScreenHeight : 180,
+                      height: fullScreenHeight ? fullScreenHeight : 250,
                     }}
                     disableVolume={true}
                     fullscreen={true}
@@ -188,20 +241,20 @@ class BlogDetail extends React.Component {
             </View>
           )}
 
-          {!fullScreenHeight && (
-            <View>
-              <Text fontFamily = {fontfamily} align ={'left'} text={data.blogTitle} font={20} bold={true} 
-                style={{
-                  paddingLeft: 12,
-                  marginVertical: 12,
-                }} />
-              <Text fontFamily = {fontfamily} align ={'left'} text={data.blog} font={20} 
-                style={{
-                  paddingLeft: 12,
-                  marginVertical: 12,
-                }} />
-            </View>
-          )}
+          {/* {!fullScreenHeight && ( */}
+          <View>
+            <Text fontFamily={fontfamily} align={'left'} text={data.blogTitle} font={20} bold={true}
+              style={{
+                paddingLeft: 12,
+                marginVertical: 12,
+              }} />
+            <Text fontFamily={fontfamily} align={'left'} text={data.blog} font={20}
+              style={{
+                paddingLeft: 12,
+                marginVertical: 12,
+              }} />
+          </View>
+          {/* )} */}
         </ScrollView>
       </Drawer>
     );

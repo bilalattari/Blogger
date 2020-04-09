@@ -33,6 +33,7 @@ import Payment from './screens/Payment';
 import SelectBlog from './screens/SelectBlog';
 import BlogCategory from './screens/BlogCategory';
 import Privacy from './screens/Privacy';
+import Terms from './screens/Terms';
 import Support from './screens/Support';
 import Shop from './screens/Shop';
 import AddProduct from './screens/AddProduct'
@@ -224,6 +225,12 @@ const HomeStack = createStackNavigator({
       headerTitle: 'Payment'
     }
   },
+  Terms: {
+    screen: Terms,
+    navigationOptions: {
+      headerTitle: 'Payment'
+    }
+  },
   SavedCards: {
     screen: SavedCards,
     navigationOptions: {
@@ -310,7 +317,7 @@ const MainTabs = createBottomTabNavigator({
         type={'font-awesome'} name={'shopping-cart'} color={tintColor} />
     },
   },
-  Profile: {
+  UserProfile: {
     screen: ProfileStack,
     navigationOptions: {
       title: "Profile",

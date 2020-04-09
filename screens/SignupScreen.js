@@ -10,6 +10,10 @@ import {
 } from 'react-native';
 import { Icon, Input, Button } from 'react-native-elements';
 import CustomButton from '../Component/Button';
+import firebase from '../utils/firebase'
+import FirebaseLib from 'react-native-firebase'
+import { connect } from 'react-redux'
+import { loginUser } from '../redux/actions/authActions'
 import CustomHeader from '../Component/header';
 import { themeColor, pinkColor } from '../Constant/index';
 import {
@@ -20,38 +24,33 @@ import {
 class SignUp extends React.Component {
   constructor(props) {
     super(props);
+     this.state = {
+       loader : false
+     }
   }
   static navigationOptions = {
     header: null,
   };
   googleLogin = async () => {
     GoogleSignin.configure({
-      scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
       webClientId: '1030461806167-rt41rc3og2qq2i4sn22vk0psn0apbscv.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
-      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-      // hostedDomain: 'blogster-20b9d.firebaseapp.com', // specifies a hosted domain restriction
-      loginHint: '', // [iOS] The user's ID, or email address, to be prefilled in the authentication UI if possible. [See docs here](https://developers.google.com/identity/sign-in/ios/api/interface_g_i_d_sign_in.html#a0a68c7504c31ab0b728432565f6e33fd)
-      forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
-      accountName: '', // [Android] specifies an account name on the device that should be used
-      iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
     });
 
     try {
       await GoogleSignin.signOut();
-      await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo, 'userInfo')
+      this.setState({loader : true})
       let value = (await GoogleSignin.getTokens({ idToken: userInfo.idToken }))
       const credential = FirebaseLib.auth.GoogleAuthProvider.credential(value.idToken);
       const firebaseUserCredential = await FirebaseLib.auth().signInWithCredential(credential);
       const googleUid = firebaseUserCredential.user.uid
-      console.log(googleUid)
       const response = await firebase.getDocument('Users', googleUid)
       let userObj = {}
       if (response.exists) {
         userObj = response.data();
         this.props.loginUser(userObj)
         this.props.navigation.navigate('App')
+        this.setState({loader : false})
       }else{
         userObj = {
           userName: firebaseUserCredential.user.displayName.toLowerCase(),
@@ -62,6 +61,7 @@ class SignUp extends React.Component {
           following: [],
           userPackage: 'none',
           userType: 'free',
+          fontFamily : 'NotoSans-Regular',
           deleted: false,
           createdAt: Date.now(),
           country: null
@@ -69,6 +69,7 @@ class SignUp extends React.Component {
         await firebase.setDocument('Users', googleUid, userObj)
         this.props.loginUser(userObj)
         this.props.navigation.navigate('BlogCategory') 
+        this.setState({loader : false})
       }
       // // console.log(credential, 'credential')
       // FirebaseLib.auth().signInWithCredential(credential).then((user) => {
@@ -76,6 +77,7 @@ class SignUp extends React.Component {
       // }).catch((err) => console.log(err))
 
     } catch (error) {
+      this.setState({loader : false})
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
       } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -184,4 +186,15 @@ const styles = StyleSheet.create({
   },
   line: { flex: 1, height: 0.5, borderWidth: 0.3, borderColor: '#ccc' },
 });
-export default SignUp;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loginUser: (userData) => dispatch(loginUser(userData))
+  }
+}
+const mapStateToProps = (state) => {
+  return {
+    userObj: state.auth.user
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp)

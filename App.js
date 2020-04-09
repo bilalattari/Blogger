@@ -18,8 +18,8 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import firebase from 'react-native-firebase'
 import { NotificationOpen } from 'react-native-firebase';
-import SplashScreen from 'react-native-splash-screen';
 import { WebView } from 'react-native-webview';
+import SplashScreen from 'react-native-splash-screen'
 
 // import DeepLinking from 'react-native-deep-linking';
 
@@ -32,7 +32,9 @@ class App extends Component {
     }
   }
   async componentDidMount() {
+    SplashScreen.hide();
     setTimeout(() => {
+
       this.setState({showSplash : false})
     }, 5000)
 

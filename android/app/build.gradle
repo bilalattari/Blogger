@@ -192,6 +192,8 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-music-control')
+    implementation project(':react-native-track-player')
     implementation project(':react-native-reanimated')
     implementation project(':react-native-video')
     implementation "androidx.appcompat:appcompat:1.0.0"

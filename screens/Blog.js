@@ -332,7 +332,7 @@ class Blog extends React.Component {
       </TouchableOpacity>
     );
   };
-
+  
   blog = (item, index) => {
     const {
       userObj: { userId }, fontfamily
