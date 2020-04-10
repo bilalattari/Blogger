@@ -663,11 +663,11 @@ export class TrackStatus extends ProgressComponent {
   render() {
     return (
       <View>
-        <View style={{ flexDirection: 'row', paddingHorizontal: 10, alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', paddingHorizontal: 10, justifyContent : "center", alignItems: 'center'  ,width : "100%"}}>
           {
             !this.props.profile ?
-              <Text style={{ color: 'white', backgroundColor: 'transparent', width: 40,
-               textAlign: 'center', fontSize: 12 }}>
+              <Text style={{ color: 'white', backgroundColor: 'transparent', 
+               textAlign: 'center', fontSize: 10 }}>
                 {/* { this.state.isSeeking ? this.formatTime(this.seek) : this.formatTime(this.state.position) } */}
                 {this.formatTime(this.state.position)}
               </Text> : null
@@ -694,12 +694,12 @@ export class TrackStatus extends ProgressComponent {
             }}
             // value={this.state.isSeeking ? this.seek : this.state.position}
             value={this.state.position}
-            style={{ width: !this.props.profile ?  '75%' : "100%" }}
+            style={{ width: !this.props.profile ?  '70%' : "100%" }}
           />
           {
             !this.props.profile ?
-              <Text style= {{ color: 'white', backgroundColor: 'transparent', width: 40,
-              textAlign: 'center', fontSize: 12}}>{this.formatTime(this.state.duration)}</Text> : null}
+              <Text style= {{ color: 'white', backgroundColor: 'transparent', 
+              textAlign: 'center', fontSize: 10}}>{this.formatTime(this.state.duration)}</Text> : null}
         </View>
       </View>
     )

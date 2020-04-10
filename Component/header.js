@@ -58,8 +58,6 @@ export default CustomHeader = props => (
                 color={'#fff'}
                 size={20}
               />
-            ) : !props.home && props.bookmark === undefined ? (
-              <Icon type={'font-awesome'} name={'ellipsis-h'} color={'#fff'} />
             ) : props.rightIcon ? (
               <Icon type={'feather'} name={'user-plus'} color={'#fff'} size={20} />
             ) : null

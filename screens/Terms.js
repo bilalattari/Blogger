@@ -124,7 +124,9 @@ class Terms extends React.Component {
         let { category } = this.state
         return (
             <ScrollView stickyHeaderIndices={[0]} style={{ backgroundColor: '#323643', flex: 1 , padding : 8 }}>
-                <CustomHeader navigation={navigation} title={'TERMS AND CONDITIONS'} />
+                <CustomHeader navigation={navigation}
+                
+                title={'TERMS AND CONDITIONS'} />
                 <FlatList
                     data={terms}
                     renderItem={({ item, index }) =>

@@ -67,14 +67,14 @@ class Yourchart extends React.Component {
         <CustomHeader navigation={navigation} title={'Your Cart'} />
         {!!chart.length ?
           chart.map(val => (
-            <ChartContainer data={val} removeFromCart={this.removeFromCart} />
+            <ChartContainer fontFamily  = {this.props.fontFamily} data={val} removeFromCart={this.removeFromCart} />
           ))
           :
           <View style={styles.cartContainer}>
             <Icon type={'material-community'} name={'cart-outline'}
               color={'#fff'}
               size={60} containerStyle={{ marginVertical: 15 }} />
-            <Text text={"You Don't Have Any Item In Your Chart"} />
+            <Text  fontFamily = {this.props.fontFamily} text={"You Don't Have Any Item In Your Chart"} />
           </View>
         }
         {!!chart.length &&
@@ -151,7 +151,7 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 const mapStateToProps = (state) => {
-  return { chart: state.chart.chart }
+  return { chart: state.chart.chart  , fontFamily : state.font.fontFamily}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Yourchart)

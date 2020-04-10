@@ -67,6 +67,7 @@ class Shop extends Component {
         <ScrollView stickyHeaderIndices={[0]} style={{ backgroundColor: '#323643', flex: 1 }}>
           <CustomHeader
               home
+              shop
               title={'SHOP'}
               // icon={true}
               navigation={navigation}

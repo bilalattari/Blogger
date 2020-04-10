@@ -32,6 +32,9 @@ import Drawer from 'react-native-drawer';
 import { themeColor, pinkColor } from '../Constant';
 import { NavigationEvents } from 'react-navigation';
 import Loader from '../Component/Loader'
+import TrackPlayer, { ProgressComponent } from 'react-native-track-player';
+import { TrackStatus } from './PostBlog'
+TrackPlayer.setupPlayer();
 const dimensions = Dimensions.get('window');
 const windowHeight = dimensions.height;
 const windowScreen = dimensions.width;
@@ -47,6 +50,7 @@ class Blog extends React.Component {
       paused: true,
       hidePlayPause: true,
       hideSeekbar: true,
+      AudioStatus: true,
       fullScreenHeight: null,
       loading: false,
       usersData: [],
@@ -62,12 +66,11 @@ class Blog extends React.Component {
     if (this.props.userObj.fontFamily) {
       this.props.changeFontFamily(this.props.userObj.fontFamily)
     }
-    this.getBlogs()
-    // this.props.navigation.addListener('didFocus', () => this.getBlogs())
+    this.props.navigation.addListener('didFocus', () => this.getBlogs())
     // this.props.navigation.addListener('didBlur', () => this.closeControlPanel())
   }
   getBlogs = async () => {
-    // this.setState({ loading: true });
+    this.setState({ loading: true, blogs: [] });
     const {
       userObj: { userId },
     } = this.props;
@@ -146,7 +149,7 @@ class Blog extends React.Component {
                     blogs.push({ id: change.doc.id, ...change.doc.data() });
                     usersIds.push(change.doc.data().userId);
                   }
-                  this.setState({ blogs: [...blogs], isBlogs: true });
+                  this.setState({ blogs: [...blogs], isBlogs: true, loading: false });
                 }
                 if (change.type === 'modified') {
                   const { blogs } = this.state;
@@ -155,7 +158,7 @@ class Blog extends React.Component {
                   );
                   blogs[findedIndex] = { id: change.doc.id, ...change.doc.data() };
 
-                  this.setState({ blogs });
+                  this.setState({ blogs, loading: false });
                 }
               });
               this.setState({ usersIds }, () => {
@@ -181,7 +184,7 @@ class Blog extends React.Component {
                         blogs.push({ id: change.doc.id, ...change.doc.data() });
                         usersIds.push(change.doc.data().userId);
                       }
-                      this.setState({ blogs: [...blogs], isBlogs: true });
+                      this.setState({ blogs: [...blogs], isBlogs: true, loading: false });
                     }
                     if (change.type === 'modified') {
                       const { blogs } = this.state;
@@ -189,7 +192,7 @@ class Blog extends React.Component {
                         item => item.id === change.doc.id,
                       );
                       blogs[findedIndex] = { id: change.doc.id, ...change.doc.data() };
-                      this.setState({ blogs });
+                      this.setState({ blogs, loading: false });
                     }
                   });
                 }
@@ -245,7 +248,37 @@ class Blog extends React.Component {
     }
     this.setState({ usersData });
   };
+  togglePlayback = async (url) => {
+    const currentTrack = await TrackPlayer.getCurrentTrack();
+    if (currentTrack == null) {
+      TrackPlayer.reset();
+      await TrackPlayer.add({ url: url });
+      TrackPlayer.play();
+    } else {
+      if (await TrackPlayer.getState() === 2) {
+        TrackPlayer.play();
+      } else {
+        TrackPlayer.pause();
+      }
+    }
+    this.UpdateTrackUI();
+  }
 
+  UpdateTrackUI = async () => {
+    if (await TrackPlayer.getState() == 2) {
+      this.setState({
+        AudioStatus: true
+      });
+    } else if (await TrackPlayer.getState() == 3) {
+      this.setState({
+        AudioStatus: false
+      });
+    } else if (await TrackPlayer.getState() == 6) {
+      this.setState({
+        AudioStatus: false
+      });
+    }
+  }
   videoIsReady() {
     this.setState({ hidePlayPause: false, hideSeekbar: false });
   }
@@ -332,7 +365,7 @@ class Blog extends React.Component {
       </TouchableOpacity>
     );
   };
-  
+
   blog = (item, index) => {
     const {
       userObj: { userId }, fontfamily
@@ -385,6 +418,22 @@ class Blog extends React.Component {
               }}
             />
           )}
+          {!!item.audioUrl &&
+            <View style={{
+              flex: 1, height: 100, backgroundColor: '#000', marginVertical: 12,
+              width: '97%', justifyContent: 'center', alignSelf: "center", borderRadius: 12
+            }}
+            >
+              <TrackStatus navigation={this.props.navigation} />
+              <TouchableOpacity onPress={() => this.togglePlayback(data.audioUrl)}
+                style={{
+                  justifyContent: "center",
+                  alignSelf: "center", marginTop: 5
+                }} activeOpacity={1}>
+                <Icon type={'font-awesome'} name={this.state.AudioStatus ? 'play' : 'pause'}
+                  color={'#fff'} size={25} />
+              </TouchableOpacity>
+            </View>}
           {!!item.videoUrl && (
             <View
               style={{
@@ -504,7 +553,7 @@ class Blog extends React.Component {
       userObj: { following },
     } = this.props;
     let { follow, blogs, isBlogs, loading, usersData, isError } = this.state;
-    // let sortedBlogs = blogs.sort((a, b) => a.createdAt < b.createdAt)
+    let sortedBlogs = blogs.sort((a, b) => a.createdAt < b.createdAt)
     return (
       <Drawer
         ref={ref => (this._drawer = ref)}
@@ -518,7 +567,9 @@ class Blog extends React.Component {
           main: { opacity: (2 - ratio) / 2 },
         })}
         content={<ControlPanel />}>
-        <NavigationEvents onDidBlur={() => this.closeControlPanel()} />
+        <NavigationEvents onDidBlur={() => { this.closeControlPanel() }}
+        />
+        <Loader isVisible={loading} />
         <ScrollView
           stickyHeaderIndices={[0]}
           style={{ backgroundColor: '#323643', flex: 1 }}>
@@ -531,25 +582,27 @@ class Blog extends React.Component {
               onPress={() => this.openControlPanel()}
             />
           )}
-                         <Loader isVisible = {loading} />
+          <Loader isVisible={loading} />
 
           {isBlogs && !!usersData.length && (
             <FlatList
-              data={blogs}
+              data={sortedBlogs}
               keyExtractor={item => item}
               renderItem={({ item, index }) => this.blog(item, index)}
             />
           )}
-          {blogs.length === 0 || isError ?
-            <TouchableOpacity style={{
-              justifyContent: 'center', alignItems: "center",
-              flex: 1, marginTop: "50%"
-            }} onPress={() => navigation.navigate('SearchUsers')}>
-              <Icon type={'material-community'} name={'blogger'} color={'#fff'} size={60} />
-              <Text fontFamily={fontfamily} style={{
-                marginTop: 30,
-              }} text={'Follow Bloggers'} font={19} color={pinkColor} align={'center'} />
-            </TouchableOpacity> : null
+          {
+            !loading ?
+              blogs.length === 0 || isError ?
+                <TouchableOpacity style={{
+                  justifyContent: 'center', alignItems: "center",
+                  flex: 1, marginTop: "50%"
+                }} onPress={() => navigation.navigate('SearchUsers')}>
+                  <Icon type={'material-community'} name={'blogger'} color={'#fff'} size={60} />
+                  <Text fontFamily={fontfamily} style={{
+                    marginTop: 30,
+                  }} text={'Follow Bloggers'} font={19} color={pinkColor} align={'center'} />
+                </TouchableOpacity> : null : null
           }
         </ScrollView>
       </Drawer>

@@ -328,6 +328,7 @@ const MainTabs = createBottomTabNavigator({
 }, {
   initialRouteName: 'Blogs',
   headerMode: 'none',
+  backBehavior : 'history',
   tabBarOptions: {
     keyboardHidesTabBar: true,
     tabStyle: { backgroundColor: themeColor },

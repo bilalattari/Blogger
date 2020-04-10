@@ -25,6 +25,7 @@ import Loader from '../Component/Loader'
 import Text from '../Component/Text'
 import ControlPanel from '../screens/ControlPanel';
 import Drawer from 'react-native-drawer';
+import { otherUserProfile, removeDate } from '../redux/actions/profileAction';
 import { NavigationEvents } from 'react-navigation';
 import TrackPlayer, { ProgressComponent } from 'react-native-track-player';
 import { TrackStatus } from './PostBlog'
@@ -35,10 +36,11 @@ class Profile extends React.Component {
     this.state = {
       comments: false,
       blogs: [],
-      loading: true,
-      AudioStatus : true,
+      loading: false,
+      AudioStatus: true,
       isFollowed: false,
       userData: '',
+      userDescription: "",
       controls: false,
       paused: true,
       hidePlayPause: true,
@@ -48,24 +50,33 @@ class Profile extends React.Component {
   static navigationOptions = {
     header: null,
   };
-  async componentDidMount() {
-    this.decideUser();
-    const { userObj, navigation } = this.props;
+  componentDidMount = async () => {
+    const { userObj, navigation, otherUser } = this.props;
+    let { newData } = this.state
     let { userId } = userObj;
-    this.props.navigation.addListener('didFocus', () => {
-      if (this.props.navigation.state.params) {
-        console.log('other usersssssssssssssssssssssssssssssssssssss')
-        if (this.props.navigation.state.params.otherUser) {
-          userId = this.props.navigation.state.params.otherUser.userId;
-          if (userObj.following.indexOf(userId) !== -1) {
-            this.setState({ isFollowed: true });
-          }
+    this.props.navigation.addListener('didFocus', async () => {
+      this.decideUser();
+      if (otherUser) {
+        console.log(otherUser, 'otherUser')
+        userId = otherUser.userId;
+        if (userObj.following.indexOf(userId) !== -1) {
+          this.setState({ isFollowed: true, loading: false });
         }
       }
     })
+
+
+    this.props.navigation.addListener('didBlur', async () => {
+      this.props.otherUserProfile(undefined)
+      // this.closeControlPanel()
+    })
+  }
+
+
+  getUserBlogs = async (userId) => {
+    console.log(userId, 'userId')
     const db = firebaseLib.firestore();
     const blogs = [];
-
     try {
       let userBlogs = await db
         .collection('Blog')
@@ -77,11 +88,10 @@ class Profile extends React.Component {
       console.log('Error', e.message);
     }
   }
-
   statsNumber = (heading, number) => (
     <View>
-      <Text text={heading} style={styles.heading} />
-      <Text text={number} style={styles.number} />
+      <Text fontFamily={this.props.fontfamily} text={heading} style={styles.heading} />
+      <Text fontFamily={this.props.fontfamily} text={number} style={styles.number} />
     </View>
   );
   togglePlayback = async (url) => {
@@ -220,20 +230,26 @@ class Profile extends React.Component {
   }
 
   decideUser = newData => {
-    const { navigation, userObj } = this.props;
+    const { userObj, otherUser } = this.props;
     let userData = '';
     if (!!userObj.userId) {
-      if (navigation.state.params && navigation.state.params.otherUser) {
-        userData = navigation.state.params.otherUser;
+      if (otherUser) {
+        userData = otherUser;
       } else {
         userData = newData ? newData : userObj;
       }
-      this.setState({ userData });
+      console.log(userData.userId, 'userDatauserDatauserData')
+      this.setState({ userData } , ()=> this.getUserBlogs(userData.userId));
     }
   };
 
   componentWillReceiveProps(nextProps) {
-    this.decideUser(nextProps.userObj);
+    if (nextProps.otherUser) {
+      this.decideUser(nextProps.otherUser);
+    }
+    else {
+      this.decideUser(nextProps.userObj);
+    }
   }
   videoIsReady() {
     this.setState({ hidePlayPause: false, hideSeekbar: false });
@@ -257,7 +273,7 @@ class Profile extends React.Component {
       return null;
     }
     let { comments, blogs, loading, isFollowed, userData } = this.state;
-    const { userName, followers, following, userId, photoUrl } = userData;
+    const { userName, followers, following, userId, photoUrl, userDescription } = userData;
 
     return (
       <Drawer
@@ -272,7 +288,16 @@ class Profile extends React.Component {
           main: { opacity: (2 - ratio) / 2 },
         })}
         content={<ControlPanel />}>
-        <NavigationEvents onDidBlur={() => this.closeControlPanel()} />
+        {/* <NavigationEvents onDidBlur={() => {
+          this.props.otherUserProfile()
+          this.decideUser(userObj),
+            this.closeControlPanel()
+        }} />
+         <NavigationEvents onDidFocus={() => {
+          // this.props.otherUserProfile(undefined)
+          // this.decideUser(userObj),
+          //   this.closeControlPanel()
+        }} /> */}
         <ScrollView
           stickyHeaderIndices={[0]}
           style={{ backgroundColor: '#323643', flex: 1, }}>
@@ -348,19 +373,21 @@ class Profile extends React.Component {
           </View>
           <View style={{
             borderBottomColor: 'grey',
-            borderBottomWidth: 3, padding: 8
+            borderBottomWidth: 1, padding: 12
           }}>
             <Text fontFamily={fontfamily} text={"DESCRIPTION"} align={"left"} style={{
               margin: 6, fontWeight: "bold", color: "#fff",
-              fontSize: 20, letterSpacing: 1, paddingRight: 12
+              fontSize: 20, letterSpacing: 1
             }} />
-
-            <Text fontFamily={fontfamily} text={userObj.userDescription ? userObj.userDescription : userId === userObj.userId ? "Please enter your description" : "User didn't added any description"} align={'left'} color={'#ccc'} font={18} />
+            <Text fontFamily={fontfamily}
+              text={userData.userDescription ? userData.userDescription : userId === userObj.userId ? "Please enter your description" : "User didn't added any description"} align={'left'} color={'#ccc'} font={18} />
           </View>
-          <Text text={'BLOGS'} align={"left"} style={{
-            padding: 6, fontWeight: "bold", color: "#fff",
-            fontSize: 20, letterSpacing: 1, paddingLeft: 12
-          }} />
+          {!!blogs.length &&
+            <Text text={'BLOGS'} align={"left"} style={{
+              padding: 6, fontWeight: "bold", color: "#fff",
+              fontSize: 20, letterSpacing: 1, paddingLeft: 12
+            }} />
+          }
           <View
             style={{
               backgroundColor: themeColor,
@@ -371,75 +398,34 @@ class Profile extends React.Component {
             <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', zIndex: -1200 }}>
               {!!blogs.length &&
                 blogs.map((data, index) => {
-                  console.log(data.audioUrl, 'data.audioUrl+++++++++++++++++++++++++++')
-                  // if (data.audioUrl) {
-                  //   this.togglePlayback(data.audioUrl)
-                  // }
-                  // console.log(data.audioUrl, 'data.audioUrl')
                   return (
                     data.imageUrl || data.videoUrl !== "" || data.audioUrl ?
                       <TouchableOpacity
-                        style={{ height: 120, width: 125, margin: 2, borderRadius: 7, overflow: "hidden" }}
+                        key={index}
+                        style={{ height: 120, width: '32%', margin: 2, borderRadius: 7, overflow: "hidden" }}
                         onPress={() => this.navigateToDetails(data, userData)}
                       >
                         {
                           data.videoUrl !== "" ?
                             <TouchableOpacity
-                              style={{ height: 120, width: 125, }}
+                              style={{
+                                height: 120, width: '100%', backgroundColor: '#000',
+                                justifyContent: "center", alignItems: "center"
+                              }}
                               onPress={() => this.navigateToDetails(data, userData)}>
-                              {Platform.OS === 'ios' ? (
-                                <Video
-                                  source={{ uri: data.videoUrl }}
-                                  style={{
-                                    height: '100%',
-                                    width: '100%',
-                                  }}
-                                  paused={true}
-                                  pictureInPicture={true}
-                                  controls={true}
-                                  onLoad={() => this.videoIsReady()}
-                                  ref={ref => (this.videoRef = ref)}
-                                />
-                              ) : (
-                                  <VideoPlayer
-                                    source={{ uri: data.videoUrl }}
-                                    videoStyle={{
-                                      height: '100%',
-                                      width: '100%',
-                                    }}
-                                    disableFullscreen={true}
-                                    style={{
-                                      height: '100%',
-                                      width: '100%',
-                                    }}
-                                    disableVolume={true}
-                                    fullscreen={false}
-                                    paused={this.state.paused}
-                                    onLoad={() => this.videoIsReady()}
-                                    disablePlayPause={this.state.hidePlayPause}
-                                    disableSeekbar={this.state.hideSeekbar}
-                                    disableBack={true}
-                                  />
-                                )}
+                              <Icon type={'antdesign'} name={'playcircleo'} color={'#fff'} size={45} />
                             </TouchableOpacity>
                             :
                             data.audioUrl ?
-                              <TouchableOpacity style={{
-                                flex: 1, height: 120, backgroundColor: '#000',
-                                width: 125, justifyContent: 'center'
-                              }}
-                                onPress={() => this.navigateToDetails(data, userData)}
-                              >
-                                <TrackStatus profile={true} navigation={this.props.navigation} />
-                                <TouchableOpacity onPress={() => this.togglePlayback(data.audioUrl)}
-                                  style={{
-                                    height: 40, width: 50, justifyContent: "center",
-                                    alignSelf: "center"
-                                  }} activeOpacity={1}>
-                                  <Icon type={'font-awesome'} name={this.state.AudioStatus ? 'play' : 'pause'}
-                                    color={'#fff'} size={14} />
-                                </TouchableOpacity>
-                              </TouchableOpacity> :
+                              <TouchableOpacity
+                                style={{
+                                  height: 120, width: '100%', backgroundColor: '#000',
+                                  justifyContent: "center", alignItems: "center"
+                                }}
+                                onPress={() => this.navigateToDetails(data, userData)}>
+                                <Icon type={'font-awesome'} name={'microphone'} color={'#fff'} size={41} />
+                              </TouchableOpacity>
+                              :
                               <Image
                                 source={{ uri: data.imageUrl }}
                                 style={{
@@ -485,22 +471,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 3,
     height: 100,
     borderTopColor: 'grey',
     borderBottomColor: 'grey',
-    borderWidth: 5,
+    borderWidth: 1,
   },
   heading: { color: 'grey', fontSize: 14, fontWeight: 'bold', margin: 4 },
   number: { color: '#fff', fontSize: 20, textAlign: 'center' },
 });
 const mapDispatchToProps = dispatch => {
-  return {};
+  return {
+    otherUserProfile: info => dispatch(otherUserProfile(info)),
+    removeDate: () => dispatch(removeDate())
+  };
 };
 const mapStateToProps = state => {
   return {
     userObj: state.auth.user,
-    fontfamily: state.font.fontFamily
+    fontfamily: state.font.fontFamily,
+    otherUser: state.profile.otherUserData
 
   };
 };

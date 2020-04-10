@@ -321,7 +321,7 @@ class ProductPay extends Component {
       <ScrollView
         style={styles.container}
         contentContainerStyle={{ flexGrow: 1 }}>
-                <Loader isVisible = {loading} />
+        <Loader isVisible={loading} />
 
         <View
           style={{
@@ -331,18 +331,18 @@ class ProductPay extends Component {
             justifyContent: 'space-between',
             marginHorizontal: 15,
           }}>
-            <Text text = {'Payment'} style = {{
-              color: '#fff',
-              fontSize: 25,
-              fontWeight: 'bold',
-              marginTop: 12,
-            }} />
-        
+          <Text text={'Payment'} style={{
+            color: '#fff',
+            fontSize: 25,
+            fontWeight: 'bold',
+            marginTop: 12,
+          }} />
+
           <Icon
             type={'font-awesome'}
             name={'angle-left'}
             color={'#fff'}
-            onPress = {()=> this.props.navigation.goBack()}
+            onPress={() => this.props.navigation.goBack()}
             containerStyle={{ marginTop: 8 }}
             size={25}
           />
@@ -361,9 +361,9 @@ class ProductPay extends Component {
           />
           <Button
             width={190}
-            title={'Pay By Saved Cards'}
+            title={`Pay ${amount}$`}
             backgroundColor={pinkColor}
-            onPress={() => this.goToSavedCards()}
+            onPress={() => this.pay()}
           />
         </View>
         <>
@@ -453,13 +453,13 @@ class ProductPay extends Component {
             keyboardType="number-pad"
           />
         </>
-        <Button
+        {/* <Button
           backgroundColor = {pinkColor}
           width = {'80%'}
           style={{marginVertical : 21}}
           onPress={() => this.pay()}
           title = {`Pay ${amount}$`}
-          />
+          /> */}
       </ScrollView>
     );
   }

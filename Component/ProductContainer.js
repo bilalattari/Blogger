@@ -57,6 +57,7 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     userObj: state.auth.user,
+    fontFamily : state.font.fontFamily
   };
 };
 

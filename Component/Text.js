@@ -7,7 +7,9 @@ export default CustomText = props => (
     <Text style={[{
         fontSize: props.font ? props.font : 16, textAlign: props.align ? props.align : "center",
         fontWeight: props.bold ? "bold" : 'normal', letterSpacing: 0.3,
-        fontFamily: props.fontFamily ? props.fontFamily : 'DancingScript-Bold',
+        fontFamily: props.fontFamily ? props.fontFamily : null,
         color: props.color ? props.color : '#fff', marginLeft: props.marginLeft ? props.marginLeft : 0,
-    }, props.style]}>{props.text}</Text>
+    }, props.style]}
+    numberOfLines = {props.numberOfLines ? props.numberOfLines : null }
+    >{props.text}</Text>
 );

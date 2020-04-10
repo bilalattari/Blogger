@@ -22,7 +22,7 @@ import Loader from '../Component/Loader';
 import ControlPanel from '../screens/ControlPanel';
 import Drawer from 'react-native-drawer';
 import { NavigationEvents } from 'react-navigation';
-
+import { otherUserProfile } from '../redux/actions/profileAction';
 class SearchUsers extends Component {
   constructor(props) {
     super(props)
@@ -93,12 +93,11 @@ class SearchUsers extends Component {
     return (
       this.props.userObj.userId !== item.userId && (
         <TouchableOpacity
-          onPress={() => navigation.navigate('UserProfile',
-            {
-              type: "Navigate",
-              routeName: "Profile",
-              params: { otherUser: item }
-            })}
+          onPress={() => {
+            this.props.otherUserProfile(item),
+              navigation.navigate('UserProfile')
+          }
+          }
           style={styles.itemContainer}>
           <View>
             {item.photoUrl ? (
@@ -232,7 +231,9 @@ class SearchUsers extends Component {
 }
 
 const mapDispatchToProps = dispatch => {
-  return {};
+  return {
+    otherUserProfile: info => dispatch(otherUserProfile(info)),
+  };
 };
 const mapStateToProps = state => {
   return {

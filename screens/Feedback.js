@@ -172,16 +172,7 @@ class Feedback extends React.Component {
             title={comments ? 'Comments' : 'Feedback'}
             onPress={() => this.openControlPanel()}
           />
-          <SearchBar
-            containerStyle={{
-              margin: 8,
-              borderRadius: 5,
-              borderTopColor: themeColor,
-              borderBottomColor: themeColor,
-            }}
-            placeholder={'Search'}
-            inputContainerStyle={{ backgroundColor: '#fff' }}
-          />
+       
           <View
             style={{
               flexDirection: 'row',

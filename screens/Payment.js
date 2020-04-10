@@ -74,7 +74,7 @@ class Payment extends React.Component {
         <ParallaxImage
           source={{uri: item.illustration}}
           containerStyle={{height: 250}}
-          style={styles.image}
+          style={{resizeMode : "contain" , height : "100%" , width : '100%'}}
           parallaxFactor={0.4}
           {...parallaxProps}
         />
@@ -199,8 +199,8 @@ class Payment extends React.Component {
             <View style={{flex: 1, justifyContent: 'space-around'}}>
               <ParallaxImage
                 source={item.illustration}
-                containerStyle={{height:screenHeight/2.7 , borderRadius : 15}}
-                style={{borderRadius: 10}}
+                containerStyle={{height:screenHeight/2.7 , borderRadius : 15 }}
+                style={{borderRadius: 10 , resizeMode : "contain"}}
                 parallaxFactor={0.4}
                 {...parallaxProps}
               />

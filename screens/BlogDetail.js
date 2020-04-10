@@ -100,7 +100,7 @@ class BlogDetail extends React.Component {
     const currentTrack = await TrackPlayer.getCurrentTrack();
     if (currentTrack == null) {
       TrackPlayer.reset();
-      await TrackPlayer.add({ url: url});
+      await TrackPlayer.add({ url: url });
       TrackPlayer.play();
     } else {
       if (await TrackPlayer.getState() === 2) {
@@ -111,7 +111,7 @@ class BlogDetail extends React.Component {
     }
     this.UpdateTrackUI();
   }
- 
+
   UpdateTrackUI = async () => {
     if (await TrackPlayer.getState() == 2) {
       this.setState({
@@ -185,7 +185,8 @@ class BlogDetail extends React.Component {
                   justifyContent: "center",
                   alignSelf: "center", marginTop: 5
                 }} activeOpacity={1}>
-                <Icon type={'font-awesome'} name={this.state.AudioStatus ? 'play' : 'pause'}
+                <Icon type={'font-awesome'}
+                  name={this.state.AudioStatus ? 'play' : 'pause'}
                   color={'#fff'} size={25} />
               </TouchableOpacity>
             </View>

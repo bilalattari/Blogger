@@ -16,12 +16,12 @@ class ChartContainer extends Component {
                     />
                     <View style={styles.flexColumn}>
                         <View style={styles.miniContainer}>
-                            <Text text={data.productName} font={18} bold={true} />
-                            <Text text={`$${data.price}`} color={'#ccc'} />
+                            <Text fontFamily={this.props.fontFamily} text={data.productName} font={18} bold={true} />
+                            <Text fontFamily={this.props.fontFamily} text={`$${data.price}`} color={'#ccc'} />
                         </View>
-                        <Text text={data.discription} align={'left'} color={'#ccc'} style = {{flex : 1}} />
+                        <Text fontFamily={this.props.fontFamily} text={data.discription} align={'left'} color={'#ccc'} style={{ flex: 1 }} />
                         <TouchableOpacity style={styles.closeIconBox} onPress={() => removeFromCart(data)}>
-                            <Icon type = {'antdesign'} name = {'delete'} color = {'red'} />
+                            <Icon type={'antdesign'} name={'delete'} color={'red'} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
         marginLeft: 20
     },
     closeIconBox: {
-        height : 30,       
+        height: 30,
         justifyContent: 'center',
         alignItems: 'flex-end'
     },
