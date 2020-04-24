@@ -38,23 +38,22 @@ class App extends Component {
       this.setState({showSplash : false})
     }, 5000)
 
-    //   firebase.notifications().onNotification((notification) => {
-    //     console.log('notification =====>', notification);
+      firebase.notifications().onNotification((notification) => {
+        console.log('notification =====>', notification);
 
-    // });
-    // firebase.notifications().onNotificationOpened((notificationOpen) => {
+    });
+    firebase.notifications().onNotificationOpened((notificationOpen) => {
     // Get the action triggered by the notification being opened
-    // const action = notificationOpen.action;
-    // console.log('notificationOpen=======>', notificationOpen);
-    // navigation.navigate('Messages')
-
+    const action = notificationOpen.action;
+    console.log('notificationOpen=======>', notificationOpen);
+    navigation.navigate('Messages')
     // Get information about the notification that was opened
     // const notification: Notification = notificationOpen.notification;
-    // });
-    //     const notification = await firebase.notifications().getInitialNotification();
-    // if(notification){
-    //   navigation.navigate('Messages')
-    // }
+    });
+        const notification = await firebase.notifications().getInitialNotification();
+    if(notification){
+      navigation.navigate('Messages')
+    }
 
     //   firebase.messaging().onMessage((message) => {
     //     console.log('message ===================>', message);

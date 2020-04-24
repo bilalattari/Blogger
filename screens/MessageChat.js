@@ -4,7 +4,7 @@ import React, { Fragment } from 'react';
 import {
   StyleSheet, TextInput,
   View, TouchableOpacity,
-  Text, FlatList, ScrollView,
+  FlatList, ScrollView,
   Image
 } from 'react-native';
 import { connect } from 'react-redux'
@@ -16,6 +16,7 @@ import { Icon } from 'react-native-elements';
 import { themeColor, pinkColor } from '../Constant';
 import DocumentPicker from 'react-native-document-picker';
 import firebaseLib from 'react-native-firebase'
+import Text from '../Component/Text'
 import firebase from '../utils/firebase'
 
 class Chat extends React.Component {
@@ -75,7 +76,7 @@ class Chat extends React.Component {
     db.collection("Users")
       .where('userId', '==', otherUserId).onSnapshot((snapShot) => {
         snapShot.docChanges.forEach((value) => {
-          this.setState({otherUserData : value.doc.data()})
+          this.setState({ otherUserData: value.doc.data() })
         })
       })
   }
@@ -98,13 +99,13 @@ class Chat extends React.Component {
 
   render() {
     const { navigation } = this.props.navigation
-    const { message, messageList  , otherUserData} = this.state
+    const { message, messageList, otherUserData } = this.state
     const { userId } = this.props.userObj
     return (
       <View style={{ flex: 1, backgroundColor: themeColor }}>
         <CustomHeader title={'Messages'}
           navigation={this.props.navigation}
-          customImage = {otherUserData.photoUrl}
+          customImage={otherUserData.photoUrl}
           navigation={this.props.navigation} />
         <ScrollView>
           {messageList.length !== 0 && <FlatList
@@ -113,16 +114,23 @@ class Chat extends React.Component {
             keyExtractor={item => item}
             renderItem={({ item, index }) =>
               <View style={{
-                minHeight: 80, borderRadius: 5, justifyContent: item.senderId === userId ? "flex-end" : "flex-start", width: "60%",
-                alignSelf: item.senderId === userId ? "flex-end" : "flex-start", marginHorizontal: 6,
+                minHeight: 30, borderRadius: 5, justifyContent: item.senderId === userId ? "flex-end" : "flex-start",
+                width: "60%",
+                alignSelf: item.senderId === userId ? "flex-end" : "flex-start", margin: 12, marginVertical: 8,
                 backgroundColor: item.senderId === userId ? '#E2E6EC' : "#FE8369",
               }}>
-                <View style={{ minHeight: 60, alignItems: "center", flex: 1, }}>
-                  <Text style={[{
-                    padding: 12, paddingVertical: 18,
-                    color: item.senderId === userId ? themeColor : "#fff",
-                  }]}>
-                    {item.message} </Text>
+                <View style={{
+                  minHeight: 20, alignItems: item.senderId === userId ? "flex-end" : "flex-start",
+                  flex: 1,
+                }}>
+                  <Text
+                    text={item.message}
+                    align = {item.senderId === userId ? "right" : "left"}
+                    fontFamily={this.props.fontfamily}
+                    style={[{
+                      padding: 12, paddingVertical: 18, lineHeight : 22,
+                      color: item.senderId === userId ? themeColor : "#fff",
+                    }]} />
                 </View>
 
                 <View style={{
@@ -142,7 +150,7 @@ class Chat extends React.Component {
           <TextInput placeholder={'Say Something'} placeholderTextColor={'grey'}
             style={{
               width: '81%', backgroundColor: '#fff', color: pinkColor,
-              height: 40, borderRadius: 7, padding: 6
+              height: 40, borderRadius: 7, padding: 6 , fontFamily : this.props.fontfamily
             }}
             onChangeText={(message) => this.setState({ message })}
             value={message}
@@ -172,7 +180,9 @@ const mapDispatchToProps = (dispatch) => {
 }
 const mapStateToProps = (state) => {
   return {
-    userObj: state.auth.user
+    userObj: state.auth.user,
+    fontfamily: state.font.fontFamily
+
   }
 }
 

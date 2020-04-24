@@ -40,6 +40,7 @@ import AddProduct from './screens/AddProduct'
 import ProductPay from './screens/ProductPay'
 import SavedCards from './screens/SavedCards'
 import SearchUsers from './screens/SearchUsers'
+import Otheruser from './screens/OtherUser'
 import Comments from './screens/Comments'
 import { Icon } from 'react-native-elements'
 import { themeColor, pinkColor } from './Constant/index'
@@ -115,36 +116,15 @@ const HomeStack = createStackNavigator({
       headerTitle: 'Feedback'
     }
   },
-  MyAddress: {
-    screen: MyAddress,
-    navigationOptions: {
-      headerTitle: 'Feedback'
-    }
-  },
+
   AddPhoto: {
     screen: AddPhoto,
     navigationOptions: {
       headerTitle: 'Feedback'
     }
   },
-  MyOrders: {
-    screen: MyOrders,
-    navigationOptions: {
-      headerTitle: 'Feedback'
-    }
-  },
-  Checkout: {
-    screen: Checkout,
-    navigationOptions: {
-      headerTitle: 'Feedback'
-    }
-  },
-  Yourchart: {
-    screen: Yourchart,
-    navigationOptions: {
-      headerTitle: 'Feedback'
-    }
-  },
+
+
   Detail: {
     screen: Detail,
     navigationOptions: {
@@ -188,12 +168,6 @@ const HomeStack = createStackNavigator({
       headerTitle: 'Feedback'
     }
   },
-  Profile: {
-    screen: Profile,
-    navigationOptions: {
-      headerTitle: 'Feedback'
-    }
-  },
 
   Feedback: {
     screen: Feedback,
@@ -201,30 +175,20 @@ const HomeStack = createStackNavigator({
       headerTitle: 'Feedback'
     }
   },
-  EditProfile: {
-    screen: EditProfile,
+
+  SearchUsers: {
+    screen: SearchUsers,
+    navigationOptions: {
+      header: null
+    }
+  },
+  Otheruser: {
+    screen: Otheruser,
     navigationOptions: {
       headerTitle: 'Feedback'
-    },
-  },
-  Shop: {
-    screen: Shop,
-    navigationOptions: {
-      headerTitle: 'Shop'
-    },
-  },
-  AddProduct: {
-    screen: AddProduct,
-    navigationOptions: {
-      headerTitle: 'Shop'
     }
   },
-  ProductPay: {
-    screen: ProductPay,
-    navigationOptions: {
-      headerTitle: 'Payment'
-    }
-  },
+
   Terms: {
     screen: Terms,
     navigationOptions: {
@@ -237,12 +201,6 @@ const HomeStack = createStackNavigator({
       headerTitle: 'Saved Cards'
     }
   },
-  SearchUsers: {
-    screen: SearchUsers,
-    navigationOptions: {
-      headerTitle: 'Search Users'
-    }
-  },
   Comments: {
     screen: Comments,
     navigationOptions: {
@@ -251,13 +209,14 @@ const HomeStack = createStackNavigator({
   }
 }, { initialRouteName: 'Blog', header: null })
 const SearchStack = createStackNavigator({
-  SearchUsers: {
-    screen: SearchUsers,
+  SelectBlog: {
+    screen: SelectBlog,
     navigationOptions: {
       header: null
     }
   },
-}, { initialRouteName: 'SearchUsers', });
+
+}, { initialRouteName: 'SelectBlog', });
 const PostBlogStack = createStackNavigator({
   PostBlog: {
     screen: PostBlog,
@@ -273,6 +232,42 @@ const ShoppingStack = createStackNavigator({
       header: null
     }
   },
+  AddProduct: {
+    screen: AddProduct,
+    navigationOptions: {
+      headerTitle: 'Shop'
+    }
+  },
+  ProductPay: {
+    screen: ProductPay,
+    navigationOptions: {
+      headerTitle: 'Payment'
+    }
+  },
+  MyOrders: {
+    screen: MyOrders,
+    navigationOptions: {
+      headerTitle: 'Feedback'
+    }
+  },
+  Checkout: {
+    screen: Checkout,
+    navigationOptions: {
+      headerTitle: 'Feedback'
+    }
+  },
+  Yourchart: {
+    screen: Yourchart,
+    navigationOptions: {
+      headerTitle: 'Feedback'
+    }
+  },
+  MyAddress: {
+    screen: MyAddress,
+    navigationOptions: {
+      headerTitle: 'Feedback'
+    }
+  },
 }, { initialRouteName: 'Shop' });
 const ProfileStack = createStackNavigator({
   Profile: {
@@ -281,6 +276,13 @@ const ProfileStack = createStackNavigator({
       header: null
     }
   },
+  EditProfile: {
+    screen: EditProfile,
+    navigationOptions: {
+      headerTitle: 'Feedback'
+    },
+  },
+
 }, { initialRouteName: 'Profile' });
 
 const MainTabs = createBottomTabNavigator({
@@ -295,7 +297,7 @@ const MainTabs = createBottomTabNavigator({
   Search: {
     screen: SearchStack,
     navigationOptions: {
-      title: "Search",
+      title: "Select Blog",
       tabBarIcon: ({ tintColor }) => <Icon size={20} color={'#fff'}
         type={'font-awesome'} name={'search'} color={tintColor} />
     },
@@ -328,14 +330,14 @@ const MainTabs = createBottomTabNavigator({
 }, {
   initialRouteName: 'Blogs',
   headerMode: 'none',
-  backBehavior : 'history',
+  backBehavior: 'history',
   tabBarOptions: {
     keyboardHidesTabBar: true,
     tabStyle: { backgroundColor: themeColor },
     activeTintColor: '#ff718d',
     inactiveTintColor: '#fff',
   },
-  
+
 });
 
 const MainDrawer = createDrawerNavigator({
@@ -353,135 +355,3 @@ const App = createSwitchNavigator({
 const Routes = createAppContainer(App)
 
 export default Routes
-
-                                      // const HomeStack = createStackNavigator({
-                                      //   Home: {
-                                      //     screen: Home,
-                                      //     navigationOptions: {
-                                      //       headerTitle: 'Home',
-                                      //     },
-                                      //   },
-                                      //   Search: {
-                                      //     screen: Search,
-                                      //     navigationOptions: {
-                                      //       headerTitle: 'Search'
-                                      //     }
-                                      //   },
-                                      //   EventDetail: {
-                                      //     screen: EventDetail,
-                                      //     navigationOptions: {
-                                      //       headerTitle: 'EventDetail',
-
-                                      //     }
-                                      //   },
-                                      // }, { initialRouteName: 'Home', })
-                                      // const EventsStack = createStackNavigator({
-                                      //   EventsScreen: {
-                                      //     screen: Events,
-                                      //     navigationOptions: {
-                                      //       header: null
-                                      //     }
-                                      //   },
-                                      // }, { initialRouteName: 'EventsScreen', });
-
-                                      // const TicketStack = createStackNavigator({
-                                      //   Ticket: {
-                                      //     screen: Ticket,
-                                      //     navigationOptions: {
-                                      //       header: null
-                                      //     }
-                                      //   },
-                                      // }, { initialRouteName: 'Ticket' });
-
-                                      // const NotificationStack = createStackNavigator({
-                                      //   Notification: {
-                                      //     screen: Notification,
-                                      //     navigationOptions: {
-                                      //       header: null
-                                      //     }
-                                      //   },
-                                      // }, { initialRouteName: 'Notification' });
-
-                                      // const ProfileStack = createStackNavigator({
-                                      //   Profile: {
-                                      //     screen: Profile,
-                                      //     navigationOptions: {
-                                      //       header: null
-                                      //     }
-                                      //   },
-                                      // }, { initialRouteName: 'Profile' });
-
-                                      // const MainTabs = createBottomTabNavigator({
-                                      //   Home: {
-                                      //     screen: HomeStack,
-                                      //     navigationOptions: {
-                                      //       title: "Home",
-                                      //       tabBarLabel : 'Home',
-                                      //       tabBarIcon : ({tintColor})=> <Icon size = {20} type = {'font-awesome'} name = {'home'} color = {tintColor} />
-                                      //     },
-                                      //   },
-                                      //   Events: {
-                                      //     screen: EventsStack,
-                                      //     navigationOptions: {
-                                      //       title: "Events",
-                                      //       tabBarIcon : ({tintColor})=> <Icon size = {20} type = {'font-awesome'} name = {'calendar'} color = {tintColor} />
-                                      //     },
-                                      //   },
-                                      //   Tickets: {
-                                      //     screen: TicketStack,
-                                      //     navigationOptions: {
-                                      //       title: "Tickets",
-                                      //       tabBarIcon : ({tintColor})=> <Icon size = {20} type = {'font-awesome'} name = {'ticket'} color = {tintColor} />
-
-                                      //     },
-                                      //   },
-                                      //   Notification: {
-                                      //     screen: NotificationStack,
-                                      //     navigationOptions: {
-                                      //       title: "Notifications",
-                                      //       tabBarIcon : ({tintColor})=> <Icon size = {20} type = {'font-awesome'} name = {'bell-o'} color = {tintColor} />
-                                      //     },
-                                      //   },
-                                      //   Profile: {
-                                      //     screen: ProfileStack,
-                                      //     navigationOptions: {
-                                      //       title: "Profile",
-                                      //       tabBarIcon : ({tintColor})=> <Icon size = {20} type = {'feather'} name = {'user'} color = {tintColor} />
-                                      //     },
-                                      //   },
-                                      // }, {
-                                      //   initialRouteName: 'Home',
-                                      //   headerMode: 'none',
-                                      //   tabBarOptions: {
-                                      //     keyboardHidesTabBar: true
-                                      //   },
-                                      //   defaultNavigationOptions : ({navigation})=>({
-                                      //     tabBarVisible : navigation.state.key === 'Home' && navigation.state.routes[1] ? false : true 
-                                      //   })
-                                      //   // defaultNavigationOptions: ({ navigation ,  }) => ({
-                                      //   //     tabBarComponent: (props) => <BottomComponent
-                                      //   //       routeName={navigation.state.routeName}
-                                      //   //       {...props} />
-                                      //   //      }),
-                                      // });
-                                      // const MainDrawer = createDrawerNavigator({
-                                      //   MainTabs: MainTabs,
-                                      // });
-
-                                      // const AppModalStack = createStackNavigator(
-                                      //   {
-                                      //     App: MainDrawer,
-                                      //   },
-                                      //   {
-                                      //     mode: "modal",
-                                      //     headerMode: "none"
-                                      //   }
-                                      // );
-
-                                      // const App = createSwitchNavigator({
-                                      //   App: {
-                                      //     screen: AppModalStack,
-                                      //   },
-                                      // });
-
-                                      // const Routes = createAppContainer(App)

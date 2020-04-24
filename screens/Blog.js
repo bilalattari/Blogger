@@ -55,19 +55,19 @@ class Blog extends React.Component {
       loading: false,
       usersData: [],
       isError: false,
+      isFocused: false
     };
   }
   static navigationOptions = {
     header: null,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     // console.log(this.props.userObj.fontFamily , '-------------')
+    // this.getBlogs()
     if (this.props.userObj.fontFamily) {
       this.props.changeFontFamily(this.props.userObj.fontFamily)
     }
-    this.props.navigation.addListener('didFocus', () => this.getBlogs())
-    // this.props.navigation.addListener('didBlur', () => this.closeControlPanel())
   }
   getBlogs = async () => {
     this.setState({ loading: true, blogs: [] });
@@ -90,7 +90,7 @@ class Blog extends React.Component {
     // ******************************************
     const db = firebaseLib.firestore();
     Linking.addEventListener('url', this.handleDeepLink);
-    // this.setState({ loading: false });
+    this.setState({ loading: false });
     const {
       userObj: { following, blogCategory },
       navigation,
@@ -134,7 +134,7 @@ class Blog extends React.Component {
             .collection('Blog')
             .orderBy('createdAt', 'desc')
             .where('category', '==', blogCategory)
-            .onSnapshot(snapShot => {
+            .onSnapshot({ includeMetadataChanges: true }, snapShot => {
               if (snapShot.empty) {
                 this.setState({ loading: false, isError: true })
                 return
@@ -161,7 +161,7 @@ class Blog extends React.Component {
                   this.setState({ blogs, loading: false });
                 }
               });
-              this.setState({ usersIds }, () => {
+              this.setState({ usersIds, loading: false }, () => {
                 this.gettingUsersInfo();
               });
             });
@@ -208,9 +208,6 @@ class Blog extends React.Component {
       console.log('Error', e.message);
     }
     this.setState({ loading: false });
-    // const snapShot = await response.forEach((doc)=> console.log('Response =====>' , doc.data()))
-    // const snapShot = response.docChanges().forEach(() => (
-    //     console.log('Response =====>', change.doc.data())))
   }
   fcmToken = async () => {
     const fcm = firebaseLib.messaging();
@@ -386,14 +383,14 @@ class Blog extends React.Component {
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image
                   source={
-                    item.userObj.photoUrl
+                    item.userObj && item.userObj.photoUrl
                       ? { uri: item.userObj.photoUrl }
                       : require('../assets/avatar.png')
                   }
                   style={styles.imageStyle}
                 />
                 <Text fontFamily={fontfamily}
-                  text={item.userObj.userName} font={16} bold={true} style={{ paddingLeft: 8 }} />
+                  text={item.userObj ? item.userObj.userName : ' '} font={16} bold={true} style={{ paddingLeft: 8 }} />
               </View>
               <CustomButton
                 fontFamily={fontfamily}
@@ -425,7 +422,7 @@ class Blog extends React.Component {
             }}
             >
               <TrackStatus navigation={this.props.navigation} />
-              <TouchableOpacity onPress={() => this.togglePlayback(data.audioUrl)}
+              <TouchableOpacity onPress={() => this.togglePlayback(item.audioUrl)}
                 style={{
                   justifyContent: "center",
                   alignSelf: "center", marginTop: 5
@@ -507,12 +504,12 @@ class Blog extends React.Component {
                 {!item.likes.includes(userId)
                   ? this._icon('heart-o', pinkColor, () => this.like(item))
                   : this._icon('heart', pinkColor, () => this.unLike(item))}
-                {this._icon('bookmark-o', '#fff', () => this.share(item))}
+                {/* {this._icon('bookmark-o', '#fff', () => this.share(item))} */}
                 {this._icon('comment-o', '#fff', () =>
                   this.props.navigation.navigate('Comments', { blog: item }),
                 )}
               </View>
-              {this._icon('ellipsis-h', '#fff')}
+              {/* {this._icon('ellipsis-h', '#fff')} */}
             </View>
           )}
         </TouchableOpacity>
@@ -553,7 +550,7 @@ class Blog extends React.Component {
       userObj: { following },
     } = this.props;
     let { follow, blogs, isBlogs, loading, usersData, isError } = this.state;
-    let sortedBlogs = blogs.sort((a, b) => a.createdAt < b.createdAt)
+    // let sortedBlogs = blogs.sort((a, b) => a.createdAt < b.createdAt)
     return (
       <Drawer
         ref={ref => (this._drawer = ref)}
@@ -567,6 +564,8 @@ class Blog extends React.Component {
           main: { opacity: (2 - ratio) / 2 },
         })}
         content={<ControlPanel />}>
+        <NavigationEvents onDidFocus={() => { this.getBlogs() }}
+        />
         <NavigationEvents onDidBlur={() => { this.closeControlPanel() }}
         />
         <Loader isVisible={loading} />
@@ -576,6 +575,7 @@ class Blog extends React.Component {
           {!this.state.fullScreenHeight && (
             <CustomHeader
               home
+              fontFamily = {fontfamily}
               title={'BLOG'}
               icon={true}
               navigation={navigation}
@@ -586,7 +586,7 @@ class Blog extends React.Component {
 
           {isBlogs && !!usersData.length && (
             <FlatList
-              data={sortedBlogs}
+              data={blogs}
               keyExtractor={item => item}
               renderItem={({ item, index }) => this.blog(item, index)}
             />

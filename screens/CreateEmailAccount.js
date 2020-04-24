@@ -29,7 +29,7 @@ class EmailAccount extends React.Component {
       confirmPassword: null,
       userName: null,
       number: null,
-      fontFamily : 'NotoSans-Regular',
+      fontFamily: 'NotoSans-Regular',
       country: null
     };
   }
@@ -41,9 +41,9 @@ class EmailAccount extends React.Component {
   }
   checkValidation = () => {
     const { email, password, confirmPassword } = this.state;
-    if (!email || !password || !confirmPassword) {
+    if (!email) {
       this.setState({ email: null, password: null, confirmPassword: null });
-      alert('All Fields Are Required');
+      alert('Enter Your Email');
       return true;
     }
     if (password !== confirmPassword) {
@@ -51,10 +51,14 @@ class EmailAccount extends React.Component {
       alert('passwords Should Match');
       return true;
     }
+    if (!email || !password || !confirmPassword) {
+      alert('All Fields Are Required');
+      return true;
+    }
   };
 
   async signUp() {
-    const { userName, email, password, number, country , fontFamily } = this.state;
+    const { userName, email, password, number, country, fontFamily } = this.state;
     const { navigation } = this.props;
     const db = firebaseLib.firestore();
     if (this.checkValidation()) return;
@@ -81,7 +85,15 @@ class EmailAccount extends React.Component {
       this.props.loginUser(response);
       this.props.navigation.navigate('BlogCategory');
     } catch (e) {
-      alert(e.message);
+      if (e.code === 'auth/email-already-in-use') {
+        alert('That email address is already in use!');
+      } else if (e.code === 'auth/invalid-email') {
+        alert('That email address is invalid!');
+      }
+      else {
+        alert(e.message);
+      }
+
     }
     this.setState({ loading: false });
   }
@@ -98,13 +110,13 @@ class EmailAccount extends React.Component {
     } = this.state;
     return (
       <ScrollView style={{ backgroundColor: '#323643', flex: 1 }}>
-                  <Loader isVisible = {loading} />
+        <Loader isVisible={loading} />
 
         <CustomHeader navigation={navigation} title={'Sign Up'} />
         <View
           style={{
-            alignItems: 'center', justifyContent: 'flex-end', 
-            marginTop: marginTop , marginHorizontal : 4
+            alignItems: 'center', justifyContent: 'flex-end',
+            marginTop: marginTop, marginHorizontal: 4
           }}>
           <Input
             placeholder={'Username'}
@@ -151,16 +163,7 @@ class EmailAccount extends React.Component {
             }
             value={confirmPassword}
           />
-          <Input
-            placeholder={'Country'}
-            placeholderTextColor={'#fff'}
-            inputContainerStyle={styles.inputContainer}
-            inputStyle={{ fontWeight: 'bold', color: '#fff' }}
-            onChangeText={country =>
-              this.sText('country', country)
-            }
-            value={country}
-          />
+
           <View style={{ marginVertical: 12, width: '100%' }}>
             <CustomButton
               title={'Sign Up'}

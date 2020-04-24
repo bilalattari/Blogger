@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,8 +10,9 @@ import {
 import CustomInput from '../Component/Input';
 import CustomButton from '../Component/Button';
 import CustomHeader from '../Component/header';
-import {withNavigation, NavigationEvents} from 'react-navigation';
-import {themeColor} from '../Constant';
+import { withNavigation, NavigationEvents } from 'react-navigation';
+import { connect } from 'react-redux';
+import { themeColor } from '../Constant';
 import ProductDescription from '../Component/ProductDescription';
 
 const url =
@@ -27,11 +28,12 @@ class BoughtItem extends React.Component {
     header: null,
   };
   render() {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     return (
-      <View style={{flex: 1}} stickyHeaderIndices={[0]}>
+      <View style={{ flex: 1 }} stickyHeaderIndices={[0]}>
         <CustomHeader
           home
+          fontFamily={this.props.fontfamily}
           title={'BOUGHT ITEM'}
           navigation={this.props.navigation}
         />
@@ -78,4 +80,16 @@ const styles = StyleSheet.create({
   //   labelStyle :{ color: themeColor, fontSize: 14, paddingVertical: 2 },
   //   header : {color : themeColor , padding : 12 , fontWeight: "800" ,fontSize : 20 }
 });
-export default withNavigation(BoughtItem);
+const mapDispatchToProps = dispatch => {
+  return {
+    loginUser: userData => dispatch(loginUser(userData)),
+  };
+};
+const mapStateToProps = state => {
+  return {
+    userObj: state.auth.user,
+    fontfamily: state.font.fontFamily
+  };
+};
+export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(BoughtItem));
+

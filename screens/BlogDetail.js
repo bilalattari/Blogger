@@ -26,6 +26,7 @@ import ControlPanel from '../screens/ControlPanel';
 import Drawer from 'react-native-drawer';
 import { themeColor, pinkColor } from '../Constant';
 import Text from '../Component/Text'
+import ImageViewer from '../Component/ImageViewer'
 import TrackPlayer, { ProgressComponent } from 'react-native-track-player';
 import { TrackStatus } from './PostBlog'
 TrackPlayer.setupPlayer();
@@ -39,6 +40,8 @@ class BlogDetail extends React.Component {
       follow: false,
       fullScreenHeight: null,
       loading: false,
+      showImageZoom: false,
+      imageUrl: '',
       AudioStatus: true
     };
   }
@@ -128,7 +131,7 @@ class BlogDetail extends React.Component {
     }
   }
   render() {
-    const { fullScreenHeight, loading } = this.state;
+    const { fullScreenHeight, loading, showImageZoom } = this.state;
     const { navigation, fontfamily, userObj: { userId } } = this.props;
     const data = this.props.navigation.state.params.data;
     let { follow } = this.state;
@@ -146,27 +149,32 @@ class BlogDetail extends React.Component {
         })}
         content={<ControlPanel />}>
         <ScrollView style={{ backgroundColor: '#323643', flex: 1 }}>
+          <ImageViewer
+            isVisible={this.state.showImageZoom}
+            imageUrl={this.state.imageUrl}
+            onCancel={() => this.setState({ showImageZoom: false, imageUrl: "" })}
+          />
           <Loader isVisible={loading} />
-          {/* {!fullScreenHeight && ( */}
           <View>
             <CustomHeader
+              fontFamily={fontfamily}
               title={'BLOG'}
               navigation={navigation}
               home={true}
               onPress={() => this.openControlPanel()}
-              bookmark={true}
+            // bookmark={true}
             />
             <View style={styles.title}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image
                   source={
-                    data.userObj.photoUrl
+                    data.userObj && data.userObj.photoUrl
                       ? { uri: data.userObj.photoUrl }
                       : require('../assets/avatar.png')
                   }
                   style={styles.imageStyle}
                 />
-                <Text fontFamily={fontfamily} text={data.userObj.userName} bold={true} />
+                <Text fontFamily={fontfamily} text={data.userObj && data.userObj.userName ? data.userObj.userName : ''} bold={true} />
               </View>
 
             </View>
@@ -193,16 +201,18 @@ class BlogDetail extends React.Component {
           )}
 
           {!!data.imageUrl && (
-            <Image
-              source={{ uri: data.imageUrl }}
-              style={{
-                height: 200,
-                width: '97%',
-                alignSelf: 'center',
-                marginVertical: 11,
-                borderRadius: 12,
-              }}
-            />
+            <TouchableOpacity onPress={() => this.setState({ showImageZoom: true, imageUrl: data.imageUrl })}>
+              <Image
+                source={{ uri: data.imageUrl, }}
+                style={{
+                  height: 200,
+                  width: '97%',
+                  alignSelf: 'center',
+                  marginVertical: 11,
+                  borderRadius: 12,
+                }}
+              />
+            </TouchableOpacity>
           )}
           {!!data.videoUrl && (
             <View

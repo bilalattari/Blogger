@@ -56,13 +56,13 @@ class Profile extends React.Component {
     let { userId } = userObj;
     this.props.navigation.addListener('didFocus', async () => {
       this.decideUser();
-      if (otherUser) {
-        console.log(otherUser, 'otherUser')
-        userId = otherUser.userId;
-        if (userObj.following.indexOf(userId) !== -1) {
-          this.setState({ isFollowed: true, loading: false });
-        }
-      }
+      // if (otherUser) {
+      //   console.log(otherUser, 'otherUser')
+      //   userId = otherUser.userId;
+      //   if (userObj.following.indexOf(userId) !== -1) {
+      //     this.setState({ isFollowed: true, loading: false });
+      //   }
+      // }
     })
 
 
@@ -244,10 +244,7 @@ class Profile extends React.Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.otherUser) {
-      this.decideUser(nextProps.otherUser);
-    }
-    else {
+    if (nextProps.userObj) {
       this.decideUser(nextProps.userObj);
     }
   }
@@ -288,16 +285,6 @@ class Profile extends React.Component {
           main: { opacity: (2 - ratio) / 2 },
         })}
         content={<ControlPanel />}>
-        {/* <NavigationEvents onDidBlur={() => {
-          this.props.otherUserProfile()
-          this.decideUser(userObj),
-            this.closeControlPanel()
-        }} />
-         <NavigationEvents onDidFocus={() => {
-          // this.props.otherUserProfile(undefined)
-          // this.decideUser(userObj),
-          //   this.closeControlPanel()
-        }} /> */}
         <ScrollView
           stickyHeaderIndices={[0]}
           style={{ backgroundColor: '#323643', flex: 1, }}>
@@ -335,28 +322,6 @@ class Profile extends React.Component {
               <Text fontFamily={fontfamily} text={'Graphic Designer'} style={{ color: '#ccc', }} />
             </View>
             <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 25 }}>
-              {!!userId && userId !== userObj.userId && (
-                <View>
-                  {isFollowed ? (
-                    <CustomButton
-                      title="Following"
-                      backgroundColor={pinkColor}
-                      width={110}
-                      height={48}
-                      onPress={() => this.unFollow(userId)}
-                    />
-                  ) : (
-                      <CustomButton
-                        title="Follow"
-                        backgroundColor={pinkColor}
-                        width={110}
-                        height={48}
-                        onPress={() => this.follow(userId)}
-                      />
-                    )}
-                </View>
-              )}
-              {userObj.userId === userId && (
                 <TouchableOpacity style={{
                   height: 50, width: 50, borderRadius: 125, justifyContent: "center", alignItems: "center",
                   borderColor: '#ccc', borderWidth: 0.5, marginLeft: 4
@@ -364,7 +329,6 @@ class Profile extends React.Component {
                   <Icon type={'material-community'} name={'pencil-outline'}
                     color={"#ccc"} size={30} />
                 </TouchableOpacity>
-              )}
             </View>
           </View>
           <View style={styles.statsView}>
@@ -373,14 +337,14 @@ class Profile extends React.Component {
           </View>
           <View style={{
             borderBottomColor: 'grey',
-            borderBottomWidth: 1, padding: 12
+            borderBottomWidth: 1, padding: 12 , paddingVertical : 16
           }}>
             <Text fontFamily={fontfamily} text={"DESCRIPTION"} align={"left"} style={{
               margin: 6, fontWeight: "bold", color: "#fff",
               fontSize: 20, letterSpacing: 1
             }} />
             <Text fontFamily={fontfamily}
-              text={userData.userDescription ? userData.userDescription : userId === userObj.userId ? "Please enter your description" : "User didn't added any description"} align={'left'} color={'#ccc'} font={18} />
+              text={userObj.userDescription ? userObj.userDescription : "Please enter your description"} align={'left'} color={'#ccc'} font={18} />
           </View>
           {!!blogs.length &&
             <Text text={'BLOGS'} align={"left"} style={{
@@ -490,7 +454,6 @@ const mapStateToProps = state => {
   return {
     userObj: state.auth.user,
     fontfamily: state.font.fontFamily,
-    otherUser: state.profile.otherUserData
 
   };
 };

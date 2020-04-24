@@ -23,18 +23,21 @@ export default CustomHeader = props => (
       }}
       centerComponent={{
         text: props.title,
+
         style: {
           color: '#fff',
           fontSize: 15,
           fontWeight: 'bold',
-          // fontFamily: 'Myriad Pro Bold SemiExtended',
+          fontFamily: props.fontFamily ? props.fontFamily : null,
         },
       }}
       rightComponent={
         props.customImage ?
           <Image source={{ uri: props.customImage }}
-            style={{ height: 50, width: 50, borderRadius: 125 , marginTop : 12 ,
-               marginRight : 8 , resizeMode : "contain" }} /> :
+            style={{
+              height: 50, width: 50, borderRadius: 125, marginTop: 12,
+              marginRight: 8, resizeMode: "contain"
+            }} /> :
           props.icon ? (
             <TouchableOpacity
               style={{ height: 60, width: 40, justifyContent: 'center', alignItems: "center" }}

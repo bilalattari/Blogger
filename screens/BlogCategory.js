@@ -7,7 +7,6 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  Text,
   ScrollView,
 } from 'react-native';
 import { SearchBar, Icon } from 'react-native-elements';
@@ -22,7 +21,7 @@ import Drawer from 'react-native-drawer';
 import firebase from '../utils/firebase';
 import { themeColor, pinkColor } from '../Constant';
 import Loader from '../Component/Loader'
-
+import Text from '../Component/Text'
 
 class BlogCategory extends React.Component {
   constructor(props) {
@@ -36,8 +35,8 @@ class BlogCategory extends React.Component {
         { name: "Lifestyle", image: require('../assets/interest/lifestyle.jpg'), selected: false },
         { name: "Politics", image: require('../assets/interest/politics.jpg'), selected: false },
         { name: "Sports", image: require('../assets/interest/sports.jpg'), selected: false },
-        { name: "Travel", image: require('../assets/interest/music.jpg'), selected: false },
-        { name: "Music", image: require('../assets/interest/photography.jpg'), selected: false },
+        { name: "Travel", image: require('../assets/interest/travel.jpg'), selected: false },
+        { name: "Music", image: require('../assets/interest/music.jpg'), selected: false },
         { name: "Business", image: require('../assets/interest/business.jpg'), selected: false },
       ],
       loading: false
@@ -79,13 +78,15 @@ class BlogCategory extends React.Component {
   }
   render() {
     const color = ['#f78da7', '#abb8c3', '#00d084', '#03a9f4', '#ff5722   '];
-    const { navigation } = this.props;
+    const { navigation, fontfamily } = this.props;
     let { category, categoryList, loading } = this.state;
     return (
       <ScrollView style={{ backgroundColor: '#323643', flex: 1 }}>
-        <CustomHeader navigation={navigation} title={'BLOG CATEGORY'} />
-        <Loader isVisible = {loading} />
-                <View style={{ marginHorizontal: 15, padding: 4 }}>
+        <CustomHeader navigation={navigation}
+          fontFamily={fontfamily}
+          title={'BLOG CATEGORY'} />
+        <Loader isVisible={loading} />
+        <View style={{ marginHorizontal: 15, padding: 4 }}>
           <Text
             style={{
               color: '#fff',
@@ -94,13 +95,12 @@ class BlogCategory extends React.Component {
               textAlign: "center",
               marginVertical: 4,
               marginHorizontal: '20%'
-            }}>
-            Select Your Interest
-          </Text>
-          <Text style={{ color: '#ccc', fontSize: 16, textAlign: "center" }}>
-            Please select the category Please select the category Please select
-            the category{' '}
-          </Text>
+            }} text={'Select Your Interest'} />
+
+
+          <Text style={{ color: '#ccc', fontSize: 16, textAlign: "center" }}
+            text={`Please select the category Please select the category Please select the category`}
+          />
         </View>
         <View style={{
           flexDirection: "row", flexWrap: "wrap", flex: 1, alignItems: "center",
@@ -119,7 +119,8 @@ class BlogCategory extends React.Component {
                     height: 103, width: 103,
                     borderRadius: 125, borderColor: data.selected ? pinkColor : "#fff", borderWidth: 2
                   }} />
-                  <Text style={{ color: "#fff", paddingTop: 6, fontWeight: '700' }}>{data.name}</Text>
+                  <Text fontFamily={fontfamily} text={data.name}
+                    style={{ color: "#fff", paddingTop: 6, }} />
                 </TouchableOpacity>
               )
             }
@@ -130,7 +131,7 @@ class BlogCategory extends React.Component {
           backgroundColor={pinkColor}
           onPress={this.addBlogCategory}
           title={'Next'} />
-      </ScrollView>
+      </ScrollView >
     );
   }
 }
@@ -147,6 +148,7 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     userObj: state.auth.user,
+    fontfamily: state.font.fontFamily
   };
 };
 

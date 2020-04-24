@@ -70,7 +70,7 @@ class SearchUsers extends Component {
     var users = [];
     const db = firebaseLib.firestore();
     try {
-      const userData = await db.collection('Users').orderBy('email').limit(40).get();
+      const userData = await db.collection('Users').orderBy('email').limit(20).get();
       userData.docs.forEach(item => {
         if (!item.data().deleted) {
           users.unshift(item.data())
@@ -94,8 +94,8 @@ class SearchUsers extends Component {
       this.props.userObj.userId !== item.userId && (
         <TouchableOpacity
           onPress={() => {
-            this.props.otherUserProfile(item),
-              navigation.navigate('UserProfile')
+            // this.props.otherUserProfile(item),
+            navigation.navigate('Otheruser', { data: item })
           }
           }
           style={styles.itemContainer}>
@@ -156,83 +156,86 @@ class SearchUsers extends Component {
     const { navigation, userObj } = this.props;
     const { users, loading, user } = this.state;
     return (
-      <Drawer
-        ref={ref => (this._drawer = ref)}
-        type="overlay"
-        tapToClose={true}
-        openDrawerOffset={0.2} // 20% gap on the right side of drawer
-        panCloseMask={0.2}
-        closedDrawerOffset={-3}
-        // styles={styles.drawer}
-        tweenHandler={ratio => ({
-          main: { opacity: (2 - ratio) / 2 },
-        })}
-        content={<ControlPanel />}>
-        <NavigationEvents onDidBlur={() => this.closeControlPanel()} />
-        <ScrollView stickyHeaderIndices={[0]} style={{ backgroundColor: '#323643', flex: 1 }}>
-          <CustomHeader
+      // <Drawer
+      //   ref={ref => (this._drawer = ref)}
+      //   type="overlay"
+      //   tapToClose={true}
+      //   openDrawerOffset={0.2} // 20% gap on the right side of drawer
+      //   panCloseMask={0.2}
+      //   closedDrawerOffset={-3}
+      //   // styles={styles.drawer}
+      //   tweenHandler={ratio => ({
+      //     main: { opacity: (2 - ratio) / 2 },
+      //   })}
+      //   content={<ControlPanel />}>
+      //   <NavigationEvents onDidBlur={() => this.closeControlPanel()} />
+      <ScrollView stickyHeaderIndices={[0]} style={{ backgroundColor: '#323643', flex: 1 }}>
+        {/* <CustomHeader
             home
             title={'Search'}
             // icon={true}
             navigation={navigation}
             onPress={() => this.openControlPanel()}
-          />
-          <Loader isVisible={loading} />
-          <View style={{ flexDirection: "row" }}>
-            <View style={{ flex: 4 }}>
-              <SearchBar
-                containerStyle={{
-                  margin: 8,
-                  borderRadius: 5,
-                  borderTopColor: themeColor,
-                  borderBottomColor: themeColor,
-                }}
-                value={user}
-                placeholder={'Search'}
-                inputContainerStyle={{ backgroundColor: '#fff' }}
-                onChangeText={user => this.setState({ user: user }, () => {
-                  if (this.state.user.length === 0) {
-                    this.setState({ users: this.allUsers })
-                  }
-                })}
-                onEndEditing={() => {
-                  if (this.state.user.length > 2) {
-                    this.search()
-                  }
-                }}
+          /> */}
+        <CustomHeader navigation={navigation} title={'SEARCH'} />
 
-              />
-            </View>
-            {
-              user !== '' ?
-                <View
-                  onPress={this.search}
-                  style={{ flex: 1, justifyContent: 'center', alignItems: "center" }}>
-                  <TouchableOpacity style={{
-                    height: 50, width: 50, justifyContent: 'center',
-                    alignItems: "center", backgroundColor: pinkColor, borderRadius: 4
-                  }}>
-                    <Icon type={'font-awesome'} name={'search'} color={'#fff'} />
-                  </TouchableOpacity>
-                </View> : null
-            }
-          </View>
-          {!!users.length && (
-            <FlatList
-              data={users}
-              keyExtractor={item => item}
-              renderItem={({ item, index }) => this.feedBackListItem(item, index)}
+        <Loader isVisible={loading} />
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ flex: 4 }}>
+            <SearchBar
+              containerStyle={{
+                margin: 8,
+                borderRadius: 5,
+                borderTopColor: themeColor,
+                borderBottomColor: themeColor,
+              }}
+              value={user}
+              onClear={() => alert('12 1 212 ')}
+              placeholder={'Search'}
+              inputContainerStyle={{ backgroundColor: '#fff' }}
+              onChangeText={user => this.setState({ user: user }, () => {
+                if (this.state.user.length === 0) {
+                  this.setState({ users: this.allUsers })
+                }
+              })}
+              onEndEditing={() => {
+                if (this.state.user.length > 2) {
+                  this.search()
+                }
+              }}
+              onCancel={() => this.setState({ user: "" })}
             />
-          )}
-        </ScrollView>
-      </Drawer>
+          </View>
+          {
+            user !== '' ?
+              <View
+                onPress={this.search}
+                style={{ flex: 1, justifyContent: 'center', alignItems: "center" }}>
+                <TouchableOpacity style={{
+                  height: 50, width: 50, justifyContent: 'center',
+                  alignItems: "center", backgroundColor: pinkColor, borderRadius: 4
+                }}>
+                  <Icon type={'font-awesome'} name={'search'} color={'#fff'} />
+                </TouchableOpacity>
+              </View> : null
+          }
+        </View>
+        {!!users.length && (
+          <FlatList
+            data={users}
+            keyExtractor={item => item}
+            renderItem={({ item, index }) => this.feedBackListItem(item, index)}
+          />
+        )}
+      </ScrollView>
+      // </Drawer>
     );
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    otherUserProfile: info => dispatch(otherUserProfile(info)),
+    // otherUserProfile: info => dispatch(otherUserProfile(info)),
   };
 };
 const mapStateToProps = state => {

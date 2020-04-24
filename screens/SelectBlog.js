@@ -21,6 +21,10 @@ import Loader from '../Component/Loader';
 import { Icon } from 'react-native-elements'
 import TrackPlayer, { ProgressComponent } from 'react-native-track-player';
 import { TrackStatus } from './PostBlog'
+import ControlPanel from '../screens/ControlPanel';
+import Drawer from 'react-native-drawer';
+import { NavigationEvents } from 'react-navigation';
+import firebase from 'react-native-firebase';
 TrackPlayer.setupPlayer();
 class SelectBlog extends React.Component {
   constructor(props) {
@@ -56,6 +60,12 @@ class SelectBlog extends React.Component {
   componentDidMount() {
     const { selectedIndex } = this.state;
     this.getBlog({ name: 'photography' }, selectedIndex);
+  }
+  navigateToDetail = async (item )=> {
+    let db = firebase.firestore()
+    let  userDate =(await db.collection('Users').doc(item.userId).get()).data() 
+    item.userObj = userDate
+    this.props.navigation.navigate('BlogDetail', { data: item });
   }
   getBlog(item, index) {
     console.log(item.name, 'iteem')
@@ -110,13 +120,37 @@ class SelectBlog extends React.Component {
     }
     this.UpdateTrackUI();
   }
-
+  closeControlPanel = () => {
+    this._drawer.close();
+  };
+  openControlPanel = () => {
+    this._drawer.open();
+  };
   render() {
     const { navigation, fontfamily } = this.props;
     let { category, blogsArr, errMessage, loading, selectedIndex, categoryList } = this.state;
     return (
+      <Drawer
+        ref={ref => (this._drawer = ref)}
+        type="overlay"
+        tapToClose={true}
+        openDrawerOffset={0.2} // 20% gap on the right side of drawer
+        panCloseMask={0.2}
+        closedDrawerOffset={-3}
+        // styles={styles.drawer}
+        tweenHandler={ratio => ({
+          main: { opacity: (2 - ratio) / 2 },
+        })}
+        content={<ControlPanel />}>
+        <NavigationEvents onDidBlur={() => this.closeControlPanel()} />
       <View style={{ backgroundColor: '#323643', flex: 1 }}>
-        <CustomHeader navigation={navigation} title={'BLOG'} />
+        <CustomHeader
+            home
+            title={'SELECT BLOG'}
+            // icon={true}
+            navigation={navigation}
+            onPress={() => this.openControlPanel()}
+          />
         <Loader isVisible={loading} />
         <View
           style={{
@@ -150,67 +184,31 @@ class SelectBlog extends React.Component {
               data={blogsArr}
               numColumns={2}
               renderItem={({ item, index }) => (
-                <TouchableOpacity key = {index} style={styles.imageContainer}>
+                <TouchableOpacity key={index} style={styles.imageContainer}
+                  onPress={() => this.navigateToDetail(item , this.props.userObj)}>
                   {!!item.audioUrl &&
-                    <View style={{
-                      flex: 1, height: 200,
-                      width: '100%', backgroundColor: '#000', marginVertical: 12,
-                      justifyContent: 'center', alignSelf: "center", borderRadius: 12
-                    }}
-                    >
-                      <TrackStatus navigation={this.props.navigation} />
-                      <TouchableOpacity onPress={() => this.togglePlayback(item.audioUrl)}
-                        style={{
-                          justifyContent: "center",
-                          alignSelf: "center",
-                          marginTop: 5
-                        }} activeOpacity={1}>
-                        <Icon type={'font-awesome'} name={this.state.AudioStatus ? 'play' : 'pause'}
-                          color={'#fff'} size={25} />
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity
+                      style={{
+                        height: 200, width: '100%', backgroundColor: '#000',
+                        justifyContent: "center", alignItems: "center",borderRadius: 15 , marginTop : 5
+                      }}
+                      onPress={() => this.navigateToDetail(item , this.props.userObj)}>
+                      <Icon type={'font-awesome'} name={'microphone'} color={'#fff'} size={41} />
+                    </TouchableOpacity>
                   }
                   {!!item.imageUrl && (
                     <Image source={{ uri: item.imageUrl }} style={styles.image} />
                   )}
                   {!!item.videoUrl && (
-                    <View
+                    <TouchableOpacity
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        marginVertical: 10,
-                      }}>
-                      {Platform.OS === 'ios' ? (
-                        <Video
-                          source={{ uri: item.videoUrl }}
-                          style={{ width: '100%', height: 250 }}
-                          paused={true}
-                          pictureInPicture={true}
-                          controls={true}
-                          onLoad={() => this.videoIsReady()}
-                          ref={ref => (this.videoRef = ref)}
-                        />
-                      ) : (
-                          <VideoPlayer
-                            source={{ uri: item.videoUrl }}
-                            videoStyle={{
-                              width: '100%',
-                              height: 160,
-                            }}
-                            style={{
-                              width: '100%',
-                              height: 160,
-                            }}
-                            disableVolume={true}
-                            fullscreen={false}
-                            paused={this.state.paused}
-                            onLoad={() => this.videoIsReady()}
-                            disablePlayPause={this.state.hidePlayPause}
-                            disableSeekbar={this.state.hideSeekbar}
-                            disableBack={true}
-                          />
-                        )}
-                    </View>
+                        height: 200, width: '100%', backgroundColor: '#000',
+                        justifyContent: "center", alignItems: "center",
+                        borderRadius: 15 , marginTop : 5
+                      }}
+                      onPress={() => this.navigateToDetail(item , this.props.userObj)}>
+                      <Icon type={'antdesign'} name={'playcircleo'} color={'#fff'} size={45} />
+                    </TouchableOpacity>
                   )}
                   <View style={{ paddingLeft: 12, marginTop: 4 }}>
                     <Text fontFamily={fontfamily} align={'left'} text={item.blog} bold={true}
@@ -228,6 +226,7 @@ class SelectBlog extends React.Component {
             )}
         </ScrollView>
       </View>
+      </Drawer>
     );
   }
 }

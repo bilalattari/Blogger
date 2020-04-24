@@ -12,6 +12,7 @@ import { connect } from 'react-redux'
 import CustomHeader from '../Component/header';
 import { themeColor, pinkColor } from '../Constant/index';
 import firebase from '../utils/firebase'
+import GoogleButton from '../Component/GoogleButton'
 import { loginUser } from '../redux/actions/authActions'
 import Spinner from 'react-native-loading-spinner-overlay';
 import CustomButton from '../Component/Button';
@@ -205,10 +206,9 @@ class Login extends React.Component {
                 title={'Facebook'}
                 backgroundColor={'#3b5998'}
               />
-              <CustomButton
+              <GoogleButton
                 onPress={this.googleLogin}
                 containerStyle={{ width: 160 }}
-                title={'Google'}
                 backgroundColor={'#00aced'}
               />
             </View>
