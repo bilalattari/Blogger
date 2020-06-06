@@ -12,6 +12,7 @@ import Carousel, { ParallaxImage, Pagination } from 'react-native-snap-carousel'
 import { Dimensions, Platform } from 'react-native';
 const { width: screenWidth } = Dimensions.get('window')
 import CustomButton from '../Component/Button'
+import axios from 'axios'
 // import Logo from '../Component/LogoImage'
 import { themeColor, pinkColor } from '../Constant/index'
 import { Icon } from 'react-native-elements';

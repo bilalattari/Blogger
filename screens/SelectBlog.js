@@ -61,11 +61,11 @@ class SelectBlog extends React.Component {
     const { selectedIndex } = this.state;
     this.getBlog({ name: 'photography' }, selectedIndex);
   }
-  navigateToDetail = async (item )=> {
+  navigateToDetail = async (item) => {
     let db = firebase.firestore()
-    let  userDate =(await db.collection('Users').doc(item.userId).get()).data() 
+    let userDate = (await db.collection('Users').doc(item.userId).get()).data()
     item.userObj = userDate
-    this.props.navigation.navigate('BlogDetail', { data: item });
+    this.props.navigation.navigate('BlogDetail', { data: item ,  navigateTo : 'SelectBlog' });
   }
   getBlog(item, index) {
     console.log(item.name, 'iteem')
@@ -90,9 +90,7 @@ class SelectBlog extends React.Component {
             this.setState({ errMessage: 'Sorry no Blogs found', blogsArr: [] });
           }
           blogs.docs.forEach(blog => {
-            if (following.indexOf(blog.data().userId) !== -1) {
-              blogsArr.push(blog.data());
-            }
+            blogsArr.push(blog.data());
             this.setState({ blogsArr: [...blogsArr] });
           });
         } catch (e) {
@@ -143,89 +141,89 @@ class SelectBlog extends React.Component {
         })}
         content={<ControlPanel />}>
         <NavigationEvents onDidBlur={() => this.closeControlPanel()} />
-      <View style={{ backgroundColor: '#323643', flex: 1 }}>
-        <CustomHeader
+        <View style={{ backgroundColor: '#323643', flex: 1 }}>
+          <CustomHeader
             home
             title={'SELECT BLOG'}
             // icon={true}
             navigation={navigation}
             onPress={() => this.openControlPanel()}
           />
-        <Loader isVisible={loading} />
-        <View
-          style={{
-            height: 50,
-            borderBottomColor: '#ccc',
-            borderBottomWidth: 0.3,
-          }}>
-          <FlatList
-            data={categoryList}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity onPress={() => this.getBlog(item, index)}>
-                <Text
-                  fontFamily={fontfamily}
-                  align={'left'}
-                  text={item.name}
-                  style={{ padding: 12 }}
-                  color={selectedIndex === index ? '#fff' : '#bbb'}
-                  bold={selectedIndex === index ? 'bold' : 'normal'} />
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-        <ScrollView>
-          <Image source={categoryList[selectedIndex].image}
-            style={{ width: "100%", height: 220, marginVertical: 12, resizeMode: "stretch" }}
-          />
-          {!!blogsArr.length ? (
+          <Loader isVisible={loading} />
+          <View
+            style={{
+              height: 50,
+              borderBottomColor: '#ccc',
+              borderBottomWidth: 0.3,
+            }}>
             <FlatList
-              data={blogsArr}
-              numColumns={2}
+              data={categoryList}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
               renderItem={({ item, index }) => (
-                <TouchableOpacity key={index} style={styles.imageContainer}
-                  onPress={() => this.navigateToDetail(item , this.props.userObj)}>
-                  {!!item.audioUrl &&
-                    <TouchableOpacity
-                      style={{
-                        height: 200, width: '100%', backgroundColor: '#000',
-                        justifyContent: "center", alignItems: "center",borderRadius: 15 , marginTop : 5
-                      }}
-                      onPress={() => this.navigateToDetail(item , this.props.userObj)}>
-                      <Icon type={'font-awesome'} name={'microphone'} color={'#fff'} size={41} />
-                    </TouchableOpacity>
-                  }
-                  {!!item.imageUrl && (
-                    <Image source={{ uri: item.imageUrl }} style={styles.image} />
-                  )}
-                  {!!item.videoUrl && (
-                    <TouchableOpacity
-                      style={{
-                        height: 200, width: '100%', backgroundColor: '#000',
-                        justifyContent: "center", alignItems: "center",
-                        borderRadius: 15 , marginTop : 5
-                      }}
-                      onPress={() => this.navigateToDetail(item , this.props.userObj)}>
-                      <Icon type={'antdesign'} name={'playcircleo'} color={'#fff'} size={45} />
-                    </TouchableOpacity>
-                  )}
-                  <View style={{ paddingLeft: 12, marginTop: 4 }}>
-                    <Text fontFamily={fontfamily} align={'left'} text={item.blog} bold={true}
-                      numberOfLines={2}
-                    />
-                    <Text fontFamily={fontfamily} align={'left'} color={'#ccc'} text={item.comments.length + '  comments'} />
-                  </View >
+                <TouchableOpacity onPress={() => this.getBlog(item, index)}>
+                  <Text
+                    fontFamily={fontfamily}
+                    align={'left'}
+                    text={item.name}
+                    style={{ padding: 12 }}
+                    color={selectedIndex === index ? '#fff' : '#bbb'}
+                    bold={selectedIndex === index ? 'bold' : 'normal'} />
                 </TouchableOpacity>
               )}
             />
-          ) : (
-              <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <Text fontFamily={fontfamily} text={errMessage} style={styles.errMessage} />
-              </View>
-            )}
-        </ScrollView>
-      </View>
+          </View>
+          <ScrollView>
+            <Image source={categoryList[selectedIndex].image}
+              style={{ width: "100%", height: 220, marginVertical: 12, resizeMode: "stretch" }}
+            />
+            {!!blogsArr.length ? (
+              <FlatList
+                data={blogsArr}
+                numColumns={2}
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity key={index} style={styles.imageContainer}
+                    onPress={() => this.navigateToDetail(item, this.props.userObj)}>
+                    {!!item.audioUrl &&
+                      <TouchableOpacity
+                        style={{
+                          height: 200, width: '100%', backgroundColor: '#000',
+                          justifyContent: "center", alignItems: "center", borderRadius: 15, marginTop: 5
+                        }}
+                        onPress={() => this.navigateToDetail(item, this.props.userObj)}>
+                        <Icon type={'font-awesome'} name={'microphone'} color={'#fff'} size={41} />
+                      </TouchableOpacity>
+                    }
+                    {!!item.imageUrl && (
+                      <Image source={{ uri: item.imageUrl }} style={styles.image} />
+                    )}
+                    {!!item.videoUrl && (
+                      <TouchableOpacity
+                        style={{
+                          height: 200, width: '100%', backgroundColor: '#000',
+                          justifyContent: "center", alignItems: "center",
+                          borderRadius: 15, marginTop: 5
+                        }}
+                        onPress={() => this.navigateToDetail(item, this.props.userObj)}>
+                        <Icon type={'antdesign'} name={'playcircleo'} color={'#fff'} size={45} />
+                      </TouchableOpacity>
+                    )}
+                    <View style={{ paddingLeft: 12, marginTop: 4 }}>
+                      <Text fontFamily={fontfamily} align={'left'} text={item.blog} bold={true}
+                        numberOfLines={2}
+                      />
+                      <Text fontFamily={fontfamily} align={'left'} color={'#ccc'} text={item.comments.length + '  comments'} />
+                    </View >
+                  </TouchableOpacity>
+                )}
+              />
+            ) : (
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                  <Text fontFamily={fontfamily} text={errMessage} style={styles.errMessage} />
+                </View>
+              )}
+          </ScrollView>
+        </View>
       </Drawer>
     );
   }

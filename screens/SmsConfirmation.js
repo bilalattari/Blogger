@@ -22,9 +22,8 @@ import Loader from '../Component/Loader'
 
 const auth = firebaseLib.auth()
 
-
 class CodeConfirmation extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       selected: 'key1',
@@ -34,7 +33,7 @@ class CodeConfirmation extends React.Component {
   static navigationOptions = {
     header: null
   }
-  onValueChange (value) {
+  onValueChange(value) {
     this.setState({
       selected: value
     })
@@ -43,32 +42,44 @@ class CodeConfirmation extends React.Component {
   componentDidMount() {
     let userObj = {}
     const foundedId = this.props.navigation.state.params.foundedId
-
     userObj = 'fuck'
-    
     auth.onAuthStateChanged(async (user) => {
-  if (user){
-    this.setState({ loading: true })
-    const dataFind = await firebase.getDocument('Users', foundedId)
+      if (user) {
+        this.setState({ loading: true })
+        const dataFind = await firebase.getDocument('Users', foundedId)
         userObj = dataFind.data();
         this.props.loginUser(userObj)
-        this.props.navigation.navigate('App')  
-  }
-  this.setState({ loading: false })
-  });
-}
-  
-  keyboardButton = (number , letters)=><TouchableOpacity style = {{height : 45 , borderRadius : 7 , 
-    backgroundColor : '#5A5B5E'  , width : '31%' , justifyContent : 'center' , alignItems : 'center'}}>
-      <Text style = {{color : "#fff" , fontSize : letters !== '' ? 15 : 18}}>{number}</Text> 
-      {
-        letters !== '' ?
-      <Text style = {{color : "#fff" , fontSize : 10 , fontWeight : 'bold'}}>{letters}</Text>  
-      : null
+        this.props.navigation.navigate('App')
       }
+      this.setState({ loading: false })
+    });
+    firebase.notifications().onNotification((notification) => {
+      console.log('notification =====>', notification);
+    });
+    firebase.notifications().onNotificationOpened((notificationOpen) => {
+      // Get the action triggered by the notification being opened
+      const action = notificationOpen.action;
+      console.log('notificationOpen=======>', notificationOpen);
+      console.log(this.props)
+      // this.props.navigation.navigate('Messages')
+      // Get information about the notification that was opened
+      // const notification: Notification = notificationOpen.notification;
+    });
+  }
+
+  keyboardButton = (number, letters) => <TouchableOpacity style={{
+    height: 45, borderRadius: 7,
+    backgroundColor: '#5A5B5E', width: '31%', justifyContent: 'center', alignItems: 'center'
+  }}>
+    <Text style={{ color: "#fff", fontSize: letters !== '' ? 15 : 18 }}>{number}</Text>
+    {
+      letters !== '' ?
+        <Text style={{ color: "#fff", fontSize: 10, fontWeight: 'bold' }}>{letters}</Text>
+        : null
+    }
   </TouchableOpacity>
 
-  async confirmSmsCode(){
+  async confirmSmsCode() {
     const phoneAuthSnapshot = this.props.navigation.state.params.phoneAuthSnapshot
     // auth.onAuthStateChanged(user => {
     //   console.log('USER', user)
@@ -76,53 +87,53 @@ class CodeConfirmation extends React.Component {
     //     console.log('USer ========> IFFFF' , user)
     //   }
     // })
-    
+
     const { code } = this.state
-    try{
+    try {
       const confirmation = await phoneAuthSnapshot.confirm(code)
     }
-    catch(e){
+    catch (e) {
       alert(e.message)
       console.log('Errror ====>', e)
     }
-    
+
     // this.props.navigation.navigate('CodeConfirmation')
 
   }
-  async resend(){
+  async resend() {
     // const phoneNumber = this.props.navigation.state.params.phoneNumber
     // await firebase.loginWithPhoneNumber(phoneNumber)
   }
-  render () {
+  render() {
     const { navigation, loading } = this.props
     return (
-        <View style={{ backgroundColor: '#323643', flex: 1 }}>
-        <Loader isVisible = {loading} />
+      <View style={{ backgroundColor: '#323643', flex: 1 }}>
+        <Loader isVisible={loading} />
 
-          <ScrollView>
-        <View style={{ padding: 30, paddingLeft: 15 }}>
-          <Text style={{ color: '#fff', fontSize: 30, fontWeight: 'bold' }}>
-            Confirmation
+        <ScrollView>
+          <View style={{ padding: 30, paddingLeft: 15 }}>
+            <Text style={{ color: '#fff', fontSize: 30, fontWeight: 'bold' }}>
+              Confirmation
           </Text>
-          <Text style={{ color: '#ccc', fontSize: 15 }}>
-            Please enter the verification code from the sms we just sent you.
+            <Text style={{ color: '#ccc', fontSize: 15 }}>
+              Please enter the verification code from the sms we just sent you.
           </Text>
-        </View>   
-        <Input placeholder = {'Code'}
-         keyboardType = {'numeric'} placeholderTextColor = {'#fff'} 
-         inputContainerStyle = {styles.inputContainer} inputStyle = {{fontWeight : 'bold' , fontSize :14}} onChangeText={(text)=> this.setState({ code: text })} />
-         <View style = {{marginVertical  : 12}}>
-             <CustomButton
-                  onPress = {()=> this.confirmSmsCode()}
-                  containerStyle = {{width : '90%'}}
-                  title = {'Confirm'} backgroundColor = {pinkColor} 
-                  />
-         </View>
-         <TouchableOpacity style = {{flexDirection : 'row'}} onPress={()=> this.resend()}>
-           <Text style = {{color : '#ccc' , paddingLeft : 25}}>Don't get it ?<Text style = {{color : pinkColor}}> Resend Code</Text></Text>
-         </TouchableOpacity>
-                  </ScrollView>
-                  {/* <View style = {{justifyContent : 'flex-end' , backgroundColor : '#000'}}>
+          </View>
+          <Input placeholder={'Code'}
+            keyboardType={'numeric'} placeholderTextColor={'#fff'}
+            inputContainerStyle={styles.inputContainer} inputStyle={{ fontWeight: 'bold', fontSize: 14 }} onChangeText={(text) => this.setState({ code: text })} />
+          <View style={{ marginVertical: 12 }}>
+            <CustomButton
+              onPress={() => this.confirmSmsCode()}
+              containerStyle={{ width: '90%' }}
+              title={'Confirm'} backgroundColor={pinkColor}
+            />
+          </View>
+          <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => this.resend()}>
+            <Text style={{ color: '#ccc', paddingLeft: 25 }}>Don't get it ?<Text style={{ color: pinkColor }}> Resend Code</Text></Text>
+          </TouchableOpacity>
+        </ScrollView>
+        {/* <View style = {{justifyContent : 'flex-end' , backgroundColor : '#000'}}>
                     <View style = {{flexDirection : 'row'  , marginTop : 5, justifyContent : 'space-around'}}>
                       {this.keyboardButton('1' , '')}
                       {this.keyboardButton('2' , 'ABC')}
@@ -140,7 +151,7 @@ class CodeConfirmation extends React.Component {
                        </View>
                        <View style = {{flexDirection : 'row'  , marginTop : 5, justifyContent : 'space-around'}}>
                       {/* {this.keyboardButton('' , '')} */}
-                      {/* <View style = {{width : '31%'}} />
+        {/* <View style = {{width : '31%'}} />
                       {this.keyboardButton('0' , '')}
                       <TouchableOpacity style = {{height : 42 , borderRadius : 7 ,  width : '31%' , justifyContent : 'center' , alignItems : 'center'}}>
                        <Icon type = {"font-awesome5"} name = {'backspace'} color = {'#fff'} />
@@ -149,7 +160,7 @@ class CodeConfirmation extends React.Component {
                        <TouchableOpacity style = {{height : 42 ,  marginTop:   18, alignSelf : "flex-end" , marginRight : 25}}>
                        <Icon type = {"font-awesome"} name = {'microphone'} color = {'#fff'} size = {30} />
                       </TouchableOpacity>
-                    </View> */} 
+                    </View> */}
       </View>
     )
   }
@@ -167,7 +178,7 @@ const styles = StyleSheet.create({
     marginVertical: 6
   },
 
-  picker :{
+  picker: {
     width: '94%',
     alignSelf: 'center',
     paddingHorizontal: 4,

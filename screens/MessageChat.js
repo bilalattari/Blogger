@@ -63,7 +63,7 @@ class Chat extends React.Component {
               querySnapShot.docChanges.forEach((values) => {
                 messageList.push(values.doc.data())
               })
-              this.setState({ messageList })
+              this.setState({ messageList }, () => this.moveDownwards())
             })
         })
       })
@@ -72,13 +72,16 @@ class Chat extends React.Component {
   getAnotherUserData = () => {
     const { otherUserId } = this.props.navigation.state.params
     const db = firebaseLib.firestore()
-    console.log(otherUserId, 'otherUserIdotherUserId')
     db.collection("Users")
       .where('userId', '==', otherUserId).onSnapshot((snapShot) => {
         snapShot.docChanges.forEach((value) => {
           this.setState({ otherUserData: value.doc.data() })
         })
       })
+  }
+
+  moveDownwards =   () => {
+    this.timehandler = setTimeout(() => this._messageScrollView.scrollToEnd({ animated: true }), 500)
   }
   async sendMessage() {
     const { otherUserId } = this.props.navigation.state.params
@@ -94,9 +97,15 @@ class Chat extends React.Component {
       senderName: userName
     }
     await db.collection('Rooms').doc(roomId).collection('Messages').add(msgObj)
+    this.moveDownwards()
     this.setState({ message: '' })
   }
-
+  componentWillUnmount() {
+    if (this.timehandler) {
+      clearTimeout(this.timehandler)
+    }
+    this.timehandler = 0
+  }
   render() {
     const { navigation } = this.props.navigation
     const { message, messageList, otherUserData } = this.state
@@ -107,40 +116,44 @@ class Chat extends React.Component {
           navigation={this.props.navigation}
           customImage={otherUserData.photoUrl}
           navigation={this.props.navigation} />
-        <ScrollView>
-          {messageList.length !== 0 && <FlatList
-            data={messageList}
-            contentContainerStyle={{ flex: 1 }}
-            keyExtractor={item => item}
-            renderItem={({ item, index }) =>
-              <View style={{
-                minHeight: 30, borderRadius: 5, justifyContent: item.senderId === userId ? "flex-end" : "flex-start",
-                width: "60%",
-                alignSelf: item.senderId === userId ? "flex-end" : "flex-start", margin: 12, marginVertical: 8,
-                backgroundColor: item.senderId === userId ? '#E2E6EC' : "#FE8369",
-              }}>
+        <ScrollView
+          ref={(e) => this._messageScrollView = e}
+        >
+          {messageList.length !== 0 &&
+            <FlatList
+              ref={(e) => this._messageScroll = e}
+              data={messageList}
+              contentContainerStyle={{ flex: 1 }}
+              keyExtractor={item => item}
+              renderItem={({ item, index }) =>
                 <View style={{
-                  minHeight: 20, alignItems: item.senderId === userId ? "flex-end" : "flex-start",
-                  flex: 1,
+                  minHeight: 30, borderRadius: 5, justifyContent: item.senderId === userId ? "flex-end" : "flex-start",
+                  width: "60%",
+                  alignSelf: item.senderId === userId ? "flex-end" : "flex-start", margin: 12, marginVertical: 8,
+                  backgroundColor: item.senderId === userId ? '#E2E6EC' : "#FE8369",
                 }}>
-                  <Text
-                    text={item.message}
-                    align = {item.senderId === userId ? "right" : "left"}
-                    fontFamily={this.props.fontfamily}
-                    style={[{
-                      padding: 12, paddingVertical: 18, lineHeight : 22,
-                      color: item.senderId === userId ? themeColor : "#fff",
-                    }]} />
-                </View>
+                  <View style={{
+                    minHeight: 20, alignItems: item.senderId === userId ? "flex-end" : "flex-start",
+                    flex: 1,
+                  }}>
+                    <Text
+                      text={item.message}
+                      align={item.senderId === userId ? "right" : "left"}
+                      fontFamily={this.props.fontfamily}
+                      style={[{
+                        padding: 12, paddingVertical: 18, lineHeight: 22,
+                        color: item.senderId === userId ? themeColor : "#fff",
+                      }]} />
+                  </View>
 
-                <View style={{
-                  height: 15, backgroundColor: themeColor, width: '100%',
-                  borderTopRightRadius: item.senderId === userId ? 41 : 0, borderTopLeftRadius: item.senderId === userId ? 0 : 41
-                }}>
+                  <View style={{
+                    height: 15, backgroundColor: themeColor, width: '100%',
+                    borderTopRightRadius: item.senderId === userId ? 41 : 0, borderTopLeftRadius: item.senderId === userId ? 0 : 41
+                  }}>
+                  </View>
                 </View>
-              </View>
-            }
-          />}
+              }
+            />}
         </ScrollView>
         <View style={styles.inputContainer}>
           {/* <TouchableOpacity style={{ width: '14%', }}>
@@ -150,7 +163,7 @@ class Chat extends React.Component {
           <TextInput placeholder={'Say Something'} placeholderTextColor={'grey'}
             style={{
               width: '81%', backgroundColor: '#fff', color: pinkColor,
-              height: 40, borderRadius: 7, padding: 6 , fontFamily : this.props.fontfamily
+              height: 40, borderRadius: 7, padding: 6, fontFamily: this.props.fontfamily
             }}
             onChangeText={(message) => this.setState({ message })}
             value={message}

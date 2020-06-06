@@ -281,7 +281,7 @@ class ProductPay extends Component {
       emptyChart();
       this.setState({ loading: false });
       alert('Success');
-      navigation.replace('Blog');
+      navigation.navigate('Blog');
     } catch (e) {
       console.log('Error ====>', e);
     }
@@ -361,7 +361,7 @@ class ProductPay extends Component {
           />
           <Button
             width={190}
-            title={`Pay ${amount}$`}
+            title={`Pay ${amount}`}
             backgroundColor={pinkColor}
             onPress={() => this.pay()}
           />

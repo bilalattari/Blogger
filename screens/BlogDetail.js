@@ -29,6 +29,7 @@ import Text from '../Component/Text'
 import ImageViewer from '../Component/ImageViewer'
 import TrackPlayer, { ProgressComponent } from 'react-native-track-player';
 import { TrackStatus } from './PostBlog'
+import firebase from 'react-native-firebase';
 TrackPlayer.setupPlayer();
 const dimensions = Dimensions.get('window');
 const windowHeight = dimensions.height;
@@ -49,10 +50,19 @@ class BlogDetail extends React.Component {
     header: null,
   };
   componentDidMount() {
-    // this.props.navigation.addListener('didBlur', () => this.closeControlPanel())
+    this.props.navigation.addListener('didBlur', () => TrackPlayer.pause())
   }
   videoIsReady() {
     this.setState({ hidePlayPause: false, hideSeekbar: false });
+  }
+
+  sendToUserDetail = async (id) => {
+    console.log(id, 'id')
+    this.setState({ loading: true })
+    let userDetail = await firebase.firestore().collection('Users').doc(id).get().then((data) => data.data())
+    this.props.navigation.navigate('Otheruser', { data: userDetail })
+    this.setState({ loading: false })
+
   }
   _icon = (name, color) => (
     <TouchableOpacity>
@@ -130,10 +140,17 @@ class BlogDetail extends React.Component {
       });
     }
   }
+
+  componentWillUnmount() {
+    TrackPlayer.pause();
+    this.setState({ AudioStatus: false })
+  }
   render() {
     const { fullScreenHeight, loading, showImageZoom } = this.state;
     const { navigation, fontfamily, userObj: { userId } } = this.props;
     const data = this.props.navigation.state.params.data;
+    const navigateTo = this.props.navigation.state.params.navigateTo;
+    const userData = this.props.navigation.state.params.userData;
     let { follow } = this.state;
     return (
       <Drawer
@@ -157,15 +174,12 @@ class BlogDetail extends React.Component {
           <Loader isVisible={loading} />
           <View>
             <CustomHeader
-              fontFamily={fontfamily}
-              title={'BLOG'}
-              navigation={navigation}
-              home={true}
-              onPress={() => this.openControlPanel()}
-            // bookmark={true}
-            />
+              onPressBack={() => navigation.navigate(navigateTo, { data: userData })}
+              fontFamily={fontfamily} title={'BLOG'} navigation={navigation} />
             <View style={styles.title}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity
+                onPress={() => this.sendToUserDetail(data.userId)}
+                style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image
                   source={
                     data.userObj && data.userObj.photoUrl
@@ -175,7 +189,7 @@ class BlogDetail extends React.Component {
                   style={styles.imageStyle}
                 />
                 <Text fontFamily={fontfamily} text={data.userObj && data.userObj.userName ? data.userObj.userName : ''} bold={true} />
-              </View>
+              </TouchableOpacity>
 
             </View>
           </View>

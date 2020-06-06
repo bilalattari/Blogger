@@ -44,7 +44,7 @@ class Detail extends React.Component {
         borderBottomColor: 'grey',
         borderBottomWidth: 0.5,
       }}>
-      <Text style={{fontSize: 18, fontWeight: 'bold', color: '#bbb'}}>
+      <Text style={{fontSize: 18,  color: '#bbb'}}>
         {name}
       </Text>
       <Text style={{color: 'grey'}}>{description}</Text>

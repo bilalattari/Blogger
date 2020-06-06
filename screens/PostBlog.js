@@ -23,7 +23,7 @@ import { request, PERMISSIONS, RESULTS, check } from 'react-native-permissions';
 import Video from 'react-native-video';
 import VideoPlayer from 'react-native-video-controls';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { Picker } from 'native-base';
+import { Picker ,Form} from 'native-base';
 import { themeColor, pinkColor } from '../Constant';
 import CustomButton from '../Component/Button';
 import firebase from '../utils/firebase';
@@ -462,22 +462,28 @@ class PostBlog extends React.Component {
                 placeholderTextColor={'#fff'}
                 inputStyle={{ color: '#fff', letterSpacing: 2, fontFamily: fontfamily }}
               />
-              <Picker
-                note
-                mode="dropdown"
-                style={{ width: '96%', color: '#fff', alignSelf: 'center', fontWeight: "bold", fontFamily: fontfamily }}
-                selectedValue={this.state.selected}
-                placeholderIconColor={'#fff'}
-                itemTextStyle={{ fontWeight: "bold" }}
-                itemStyle={{ height: 40, fontFamily: fontfamily }}
-                onValueChange={this.onValueChange.bind(this)}>
-                <Picker.Item label="Select Category" value="" />
-                {
-                  blogsCategory.map((data, index) =>
-                    <Picker.Item key={index} label={data.name} value={data.name.toLowerCase()} />
-                  )
-                }
-              </Picker>
+              <Form>
+                <Picker
+                  note
+                  mode="dropdown"
+                  style={{
+                    width: '96%', alignSelf: 'center',
+                    fontWeight: "normal", fontFamily : fontfamily , color : '#fff'
+                  }}
+                  selectedValue={this.state.selected}
+                  placeholderIconColor={'#fff'}
+                  itemStyle={{ height: 40, fontFamily: fontfamily, fontWeight: 'normal' }}
+                  itemTextStyle={{ fontFamily: fontfamily, color: '#fff', }}
+                  onValueChange={this.onValueChange.bind(this)}>
+                  <Picker.Item label="Select Category" value="" />
+                  {
+                    blogsCategory.map((data, index) =>
+                      <Picker.Item key={index} label={data.name}
+                        value={data.name.toLowerCase()} />
+                    )
+                  }
+                </Picker>
+              </Form>
             </>
           )}
           {!!path && !fullScreenHeight && (
@@ -663,11 +669,13 @@ export class TrackStatus extends ProgressComponent {
   render() {
     return (
       <View>
-        <View style={{ flexDirection: 'row', paddingHorizontal: 10, justifyContent : "center", alignItems: 'center'  ,width : "100%"}}>
+        <View style={{ flexDirection: 'row', paddingHorizontal: 10, justifyContent: "center", alignItems: 'center', width: "100%" }}>
           {
             !this.props.profile ?
-              <Text style={{ color: 'white', backgroundColor: 'transparent', 
-               textAlign: 'center', fontSize: 10 }}>
+              <Text style={{
+                color: 'white', backgroundColor: 'transparent',
+                textAlign: 'center', fontSize: 10
+              }}>
                 {/* { this.state.isSeeking ? this.formatTime(this.seek) : this.formatTime(this.state.position) } */}
                 {this.formatTime(this.state.position)}
               </Text> : null
@@ -694,12 +702,14 @@ export class TrackStatus extends ProgressComponent {
             }}
             // value={this.state.isSeeking ? this.seek : this.state.position}
             value={this.state.position}
-            style={{ width: !this.props.profile ?  '70%' : "100%" }}
+            style={{ width: !this.props.profile ? '70%' : "100%" }}
           />
           {
             !this.props.profile ?
-              <Text style= {{ color: 'white', backgroundColor: 'transparent', 
-              textAlign: 'center', fontSize: 10}}>{this.formatTime(this.state.duration)}</Text> : null}
+              <Text style={{
+                color: 'white', backgroundColor: 'transparent',
+                textAlign: 'center', fontSize: 10
+              }}>{this.formatTime(this.state.duration)}</Text> : null}
         </View>
       </View>
     )

@@ -239,7 +239,7 @@ class Profile extends React.Component {
         userData = newData ? newData : userObj;
       }
       console.log(userData.userId, 'userDatauserDatauserData')
-      this.setState({ userData } , ()=> this.getUserBlogs(userData.userId));
+      this.setState({ userData }, () => this.getUserBlogs(userData.userId));
     }
   };
 
@@ -255,7 +255,7 @@ class Profile extends React.Component {
   navigateToDetails(blog, userData) {
     const { navigation } = this.props;
     blog.userObj = userData;
-    navigation.navigate('BlogDetail', { data: blog });
+    navigation.navigate('BlogDetail', { data: blog, navigateTo: 'Profile' });
   }
   closeControlPanel = () => {
     this._drawer.close();
@@ -307,10 +307,12 @@ class Profile extends React.Component {
             <View style={{ alignSelf: 'center', alignItems: 'center' }}>
               <View style={styles.imageWrapper}>
                 {photoUrl ? (
-                  <Image
-                    source={{ uri: photoUrl }}
-                    style={[styles.imageStyle, { borderRadius: 125 }]}
-                  />
+                  <TouchableOpacity onPress = {()=> navigation.navigate('EditProfile')} >
+                    <Image
+                      source={{ uri: photoUrl }}
+                      style={[styles.imageStyle, { borderRadius: 125 }]}
+                    />
+                  </TouchableOpacity>
                 ) : (
                     <Image
                       source={require('../assets/avatar.png')}
@@ -318,17 +320,17 @@ class Profile extends React.Component {
                     />
                   )}
               </View>
-              <Text fontFamily={fontfamily} text={userName} style={{ fontSize: 18, fontWeight: 'bold', marginTop: 8 }} />
+              <Text fontFamily={fontfamily} text={userName} bold = {true} style={{ fontSize: 18,  marginTop: 8 }} />
               <Text fontFamily={fontfamily} text={'Graphic Designer'} style={{ color: '#ccc', }} />
             </View>
             <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 25 }}>
-                <TouchableOpacity style={{
-                  height: 50, width: 50, borderRadius: 125, justifyContent: "center", alignItems: "center",
-                  borderColor: '#ccc', borderWidth: 0.5, marginLeft: 4
-                }} onPress={() => this.props.navigation.navigate('EditProfile')}>
-                  <Icon type={'material-community'} name={'pencil-outline'}
-                    color={"#ccc"} size={30} />
-                </TouchableOpacity>
+              <TouchableOpacity style={{
+                height: 50, width: 50, borderRadius: 125, justifyContent: "center", alignItems: "center",
+                borderColor: '#ccc', borderWidth: 0.5, marginLeft: 4
+              }} onPress={() => this.props.navigation.navigate('EditProfile')}>
+                <Icon type={'material-community'} name={'pencil-outline'}
+                  color={"#ccc"} size={30} />
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.statsView}>
@@ -337,18 +339,18 @@ class Profile extends React.Component {
           </View>
           <View style={{
             borderBottomColor: 'grey',
-            borderBottomWidth: 1, padding: 12 , paddingVertical : 16
+            borderBottomWidth: 1, padding: 12, paddingVertical: 16
           }}>
-            <Text fontFamily={fontfamily} text={"DESCRIPTION"} align={"left"} style={{
-              margin: 6, fontWeight: "bold", color: "#fff",
+            <Text fontFamily={fontfamily} text={"DESCRIPTION"} bold = {true} align={"left"} style={{
+              margin: 6, color: "#fff",
               fontSize: 20, letterSpacing: 1
             }} />
             <Text fontFamily={fontfamily}
               text={userObj.userDescription ? userObj.userDescription : "Please enter your description"} align={'left'} color={'#ccc'} font={18} />
           </View>
           {!!blogs.length &&
-            <Text text={'BLOGS'} align={"left"} style={{
-              padding: 6, fontWeight: "bold", color: "#fff",
+            <Text text={'BLOGS'} bold = {true} align={"left"} style={{
+              padding: 6, color: "#fff",
               fontSize: 20, letterSpacing: 1, paddingLeft: 12
             }} />
           }

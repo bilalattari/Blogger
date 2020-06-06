@@ -281,7 +281,7 @@ class Blog extends React.Component {
   }
   navigateToDetail(item) {
     this.setState({ paused: true });
-    this.props.navigation.navigate('BlogDetail', { data: item });
+    this.props.navigation.navigate('BlogDetail', { data: item , navigateTo : 'Blog' });
   }
 
   async share(item) {

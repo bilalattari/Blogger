@@ -1,11 +1,10 @@
 /* eslint-disable */
 
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Text,
   FlatList,
   ScrollView,
   TouchableWithoutFeedback,
@@ -13,12 +12,13 @@ import {
   StatusBar,
 } from 'react-native';
 import CustomHeader from '../Component/header';
-import {withNavigation, NavigationEvents} from 'react-navigation';
-import {themeColor, pinkColor} from '../Constant/index';
-import {connect} from 'react-redux';
+import { withNavigation, NavigationEvents } from 'react-navigation';
+import { themeColor, pinkColor } from '../Constant/index';
+import { connect } from 'react-redux';
 import firebase from '../utils/firebase';
 import FirebaseLib from 'react-native-firebase';
 import Loader from '../Component/Loader'
+import Text from '../Component/Text'
 class Messages extends React.Component {
   constructor(props) {
     super(props);
@@ -33,7 +33,7 @@ class Messages extends React.Component {
   };
 
   async componentDidMount() {
-    const {userId} = this.props.userObj;
+    const { userId } = this.props.userObj;
     const otherUsersArr = [];
     const db = FirebaseLib.firestore();
     try {
@@ -43,7 +43,7 @@ class Messages extends React.Component {
         '==',
         true,
       );
-      if (!idsArray.length) return this.setState({loading: false});
+      if (!idsArray.length) return this.setState({ loading: false });
       for (var i = 0; i < idsArray.length; i++) {
         if (idsArray[i] !== userId) {
           const otherUsers = await firebase.getDocument('Users', idsArray[i]);
@@ -60,17 +60,17 @@ class Messages extends React.Component {
               .collection('Messages')
               .orderBy('createdAt')
               .get();
-              if(doc){
-                const lastIndex = doc.docs.length - 1;
-                const message = doc.docs[lastIndex].data().message;
-                otherUsers.data().lastMessage = message;
-    
-                otherUsersArr.push(otherUsers.data());
-                this.setState({otherUsersArr, loading: false});
-              }
-              else{
-                this.setState({otherUsersArr, loading: false});
-              }
+            if (doc) {
+              const lastIndex = doc.docs.length - 1;
+              const message = doc.docs[lastIndex].data().message;
+              otherUsers.data().lastMessage = message;
+
+              otherUsersArr.push(otherUsers.data());
+              this.setState({ otherUsersArr, loading: false });
+            }
+            else {
+              this.setState({ otherUsersArr, loading: false });
+            }
           });
         }
       }
@@ -82,37 +82,36 @@ class Messages extends React.Component {
   messageList = item => (
     <TouchableOpacity
       onPress={() =>
-        this.props.navigation.navigate('Chat', {otherUserId: item.userId})
+        this.props.navigation.navigate('Chat', { otherUserId: item.userId })
       }
       style={styles.messageContainer}>
       <View>
         <Image
           source={
             item.photoUrl
-              ? {uri: item.photoUrl}
+              ? { uri: item.photoUrl }
               : require('../assets/avatar.png')
           }
           style={styles.msgImage}
         />
-        <View style={[styles.iconContainer, {backgroundColor: pinkColor}]}>
-          <Text style={{color: '#fff', fontSize: 10}}> 1</Text>
+        <View style={[styles.iconContainer, { backgroundColor: pinkColor }]}>
+          <Text text={'1'} style={{ color: '#fff', fontSize: 10 }} />
         </View>
       </View>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <View style={styles.msgName}>
-          <Text style={styles.name}>{item.userName}</Text>
+          <Text text={item.userName} style={styles.name} />
         </View>
-        <Text style={{paddingLeft: 5, color: '#ccc'}}>{item.lastMessage}</Text>
+        <Text align = {'left'} text={item.lastMessage} style={{ paddingLeft: 5, color: '#ccc' }} />
       </View>
     </TouchableOpacity>
   );
   render() {
-    const {navigation} = this.props;
-    const {otherUsersArr, loading} = this.state;
-    console.log(otherUsersArr , 'otherUsersArrotherUsersArr')
+    const { navigation } = this.props;
+    const { otherUsersArr, loading } = this.state;
     return (
       <View style={styles.container}>
-               <Loader isVisible = {loading} />
+        <Loader isVisible={loading} />
 
 
         {/* <StatusBar backgroundColor={themeColor} translucent /> */}
@@ -197,7 +196,7 @@ class Messages extends React.Component {
         </View>
         <FlatList
           data={otherUsersArr}
-          renderItem={({item, index}) => this.messageList(item)}
+          renderItem={({ item, index }) => this.messageList(item)}
         />
       </View>
     );
@@ -227,7 +226,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: 'grey',
   },
-  msgImage: {height: 55, width: 55, borderRadius: 25, marginHorizontal: 10},
+  msgImage: { height: 55, width: 55, borderRadius: 25, marginHorizontal: 10 },
   msgName: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -235,7 +234,7 @@ const styles = StyleSheet.create({
     height: 30,
     alignItems: 'center',
   },
-  name: {fontWeight: 'bold', fontSize: 18, color: '#fff'},
+  name: { fontWeight: 'bold', fontSize: 18, color: '#fff' },
 });
 
 const mapDispatchToProps = dispatch => {

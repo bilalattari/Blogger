@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import React, { Fragment } from 'react';
+import React, {Fragment} from 'react';
 import {
   StyleSheet,
   Image,
@@ -9,26 +9,26 @@ import {
   FlatList,
   ScrollView,
 } from 'react-native';
-import { SearchBar, Icon, Input } from 'react-native-elements';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { Picker } from 'native-base';
-import { connect } from 'react-redux';
+import {SearchBar, Icon, Input} from 'react-native-elements';
+import {SwipeListView} from 'react-native-swipe-list-view';
+import {Picker} from 'native-base';
+import {connect} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
-import { request, PERMISSIONS, RESULTS, check } from 'react-native-permissions';
+import {request, PERMISSIONS, RESULTS, check} from 'react-native-permissions';
 import firebase from '../utils/firebase';
 import firebaseLib from 'react-native-firebase';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Dialogue from '../Component/Dialogue';
 // import DialogInput from 'react-native-dialog-input';
 import InputModal from '../Component/InputModal';
-import { logoutUser } from '../redux/actions/authActions';
-import { changeFontFamily } from '../redux/actions/fontaction';
-import { StackActions, NavigationActions } from 'react-navigation';
-import Text from '../Component/Text'
+import {logoutUser} from '../redux/actions/authActions';
+import {changeFontFamily} from '../redux/actions/fontaction';
+import {StackActions, NavigationActions} from 'react-navigation';
+import Text from '../Component/Text';
 import CustomButton from '../Component/Button';
 import CustomHeader from '../Component/header';
-import { themeColor, pinkColor } from '../Constant';
-import Loader from '../Component/Loader'
+import {themeColor, pinkColor} from '../Constant';
+import Loader from '../Component/Loader';
 
 class EditProfile extends React.Component {
   constructor(props) {
@@ -41,9 +41,9 @@ class EditProfile extends React.Component {
       showDialogue: false,
       inputDialogueShow: false,
       password: '',
-      userDescription: "",
-      fontFamily: "",
-      number: null
+      userDescription: '',
+      fontFamily: '',
+      number: null,
     };
   }
   static navigationOptions = {
@@ -51,9 +51,9 @@ class EditProfile extends React.Component {
   };
 
   componentDidMount() {
-    const { userObj } = this.props;
-    const { userName, photoUrl, country, userDescription } = userObj;
-    this.setState({ userName, photoUrl, country, userDescription });
+    const {userObj} = this.props;
+    const {userName, photoUrl, country, userDescription} = userObj;
+    this.setState({userName, photoUrl, country, userDescription});
   }
   galleryPermissionAndroid() {
     return request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
@@ -71,22 +71,32 @@ class EditProfile extends React.Component {
       includeBase64: true,
       cropping: true,
     });
-    this.setState({ photoUrl: image.path });
+    this.setState({photoUrl: image.path});
   }
 
-  onValueChange = (value) => {
-    this.setState({
-      fontFamily: value,
-    }, () => this.props.changeFontFamily(this.state.fontFamily));
-  }
+  onValueChange = value => {
+    this.setState(
+      {
+        fontFamily: value,
+      },
+      () => this.props.changeFontFamily(this.state.fontFamily),
+    );
+  };
 
   async updateProfile() {
     const {
-      userObj: { userId },
+      userObj: {userId},
       navigation,
     } = this.props;
-    let { photoUrl, userName, country, number, fontFamily, userDescription } = this.state;
-    this.setState({ loading: true });
+    let {
+      photoUrl,
+      userName,
+      country,
+      number,
+      fontFamily,
+      userDescription,
+    } = this.state;
+    this.setState({loading: true});
     if (photoUrl && !photoUrl.includes('https')) {
       photoUrl = await firebase.uploadImage(photoUrl, userId);
     }
@@ -96,7 +106,7 @@ class EditProfile extends React.Component {
       country,
       fontFamily,
       userDescription,
-      number
+      number,
     };
     try {
       await firebase.updateDoc('Users', userId, data);
@@ -104,7 +114,7 @@ class EditProfile extends React.Component {
     } catch (e) {
       alert(e.message);
     }
-    this.setState({ loading: false });
+    this.setState({loading: false});
   }
 
   // handleOk() {
@@ -114,34 +124,34 @@ class EditProfile extends React.Component {
   // }
 
   handleCancel() {
-    this.setState({ showDialogue: false });
+    this.setState({showDialogue: false});
   }
 
   async startDeletingUser(password) {
     const db = firebaseLib.firestore();
-    const { userObj, logoutUser, navigation } = this.props;
-    const { email, userId } = userObj;
+    const {userObj, logoutUser, navigation} = this.props;
+    const {email, userId} = userObj;
     try {
-      firebase.updateDoc('Users', userId, { deleted: true });
+      firebase.updateDoc('Users', userId, {deleted: true});
       logoutUser();
       navigation.navigate('Auth');
     } catch (e) {
       alert(e);
     }
-    this.setState({ inputDialogueShow: false });
+    this.setState({inputDialogueShow: false});
   }
 
   getStackReseter(routeName) {
     const resetAction = StackActions.reset({
       index: 0,
-      actions: [NavigationActions.navigate({ routeName })],
+      actions: [NavigationActions.navigate({routeName})],
     });
 
     return resetAction;
   }
 
   render() {
-    const { navigation } = this.props;
+    const {navigation} = this.props;
     const {
       userName,
       photoUrl,
@@ -156,7 +166,7 @@ class EditProfile extends React.Component {
     return (
       <ScrollView
         stickyHeaderIndices={[0]}
-        style={{ backgroundColor: '#323643', flex: 1 }}>
+        style={{backgroundColor: '#323643', flex: 1}}>
         <CustomHeader navigation={navigation} title={'Edit PROFILE'} />
         <Loader isVisible={loading} />
         <View
@@ -170,68 +180,75 @@ class EditProfile extends React.Component {
           }}>
           <View style={styles.imageWrapper}>
             {photoUrl ? (
-              <Image source={{ uri: photoUrl }} style={[styles.imageStyle]} />
+              <Image source={{uri: photoUrl}} style={[styles.imageStyle]} />
             ) : (
-                <Image
-                  source={require('../assets/avatar.png')}
-                  style={[styles.imageStyle]}
-                />
-              )}
+              <Image
+                source={require('../assets/avatar.png')}
+                style={[styles.imageStyle]}
+              />
+            )}
           </View>
           <TouchableOpacity onPress={() => this.changePicture()}>
-            <Text fontFamily={this.props.fontFamily}
-              text={'Change Profile Picture'} color={pinkColor}
-              font={15} style={{ marginTop: -12 }} />
+            <Text
+              fontFamily={this.props.fontFamily}
+              text={'Change Profile Picture'}
+              color={pinkColor}
+              font={15}
+              style={{marginTop: -12}}
+            />
           </TouchableOpacity>
         </View>
         <Input
           placeholder={'User name'}
-          containerStyle={{ width: '100%' }}
-          inputStyle={[styles.inputStyle, { fontFamily: this.props.fontFamily }]}
+          containerStyle={{width: '100%'}}
+          inputStyle={[styles.inputStyle, {fontFamily: this.props.fontFamily}]}
           placeholderTextColor={'#bbb'}
           inputContainerStyle={styles.inputContainer}
           value={userName}
-          onChangeText={userName => this.setState({ userName })}
+          onChangeText={userName => this.setState({userName})}
         />
         <Input
           placeholder={'Please Enter Your Description'}
-          containerStyle={{ width: '100%' }}
-          inputStyle={[styles.inputStyle, { fontFamily: this.props.fontFamily }]}
+          containerStyle={{width: '100%'}}
+          inputStyle={[styles.inputStyle, {fontFamily: this.props.fontFamily}]}
           placeholderTextColor={'#bbb'}
-          inputContainerStyle={[styles.inputContainer, { height: 120 }]}
+          inputContainerStyle={[styles.inputContainer, {height: 120}]}
           multiline={true}
           value={userDescription}
-          onChangeText={userDescription => this.setState({ userDescription })}
+          onChangeText={userDescription => this.setState({userDescription})}
         />
         <Input
           placeholder={'Country'}
-          containerStyle={{ width: '100%' }}
-          inputStyle={[styles.inputStyle, { fontFamily: this.props.fontFamily }]}
+          containerStyle={{width: '100%'}}
+          inputStyle={[styles.inputStyle, {fontFamily: this.props.fontFamily}]}
           placeholderTextColor={'#bbb'}
           inputContainerStyle={styles.inputContainer}
           value={country}
-          onChangeText={country => this.setState({ country })}
+          onChangeText={country => this.setState({country})}
         />
         <Input
           placeholder={'Phone number with country code'}
-          containerStyle={{ width: '100%' }}
-          inputStyle={[styles.inputStyle, { fontFamily: this.props.fontFamily }]}
+          containerStyle={{width: '100%'}}
+          inputStyle={[styles.inputStyle, {fontFamily: this.props.fontFamily}]}
           placeholderTextColor={'#bbb'}
           inputContainerStyle={styles.inputContainer}
           value={number}
-          onChangeText={number => this.setState({ number })}
-          keyboardType='name-phone-pad'
+          onChangeText={number => this.setState({number})}
+          keyboardType="name-phone-pad"
         />
         <View style={styles.picker}>
           <Picker
             note
             mode="dropdown"
-            style={{ width: '50%', color: '#bbb', alignItems: 'flex-end' }}
+            style={{width: '50%', color: '#bbb', alignItems: 'flex-end'}}
             selectedValue={fontFamily}
             onValueChange={this.onValueChange.bind(this)}>
-            <Picker.Item label="Source Sans Pro" value="SourceSansPro-Bold" />
-            <Picker.Item label="Blogger Sans" value="Blogger_Sans" />
-            <Picker.Item label="Dancing Script" value="DancingScript-Bold" />
+            <Picker.Item
+              label="Source Sans Pro"
+              value="SourceSansPro-Regular"
+            />
+            <Picker.Item label="Blogger Sans" value="Blogger_Sans-Medium" />
+            <Picker.Item label="Dancing Script" value="DancingScript-Regular" />
           </Picker>
         </View>
         <View
@@ -244,15 +261,15 @@ class EditProfile extends React.Component {
             borderTopColor: '#444B60',
             borderTopWidth: 5,
           }}>
-          <TouchableOpacity onPress={() => this.setState({ showDialogue: true })}>
-            <Text style={{ color: '#A05669' }}>Delete Account</Text>
+          <TouchableOpacity onPress={() => this.setState({showDialogue: true})}>
+            <Text style={{color: '#A05669'}}>Delete Account</Text>
           </TouchableOpacity>
         </View>
-        <View style={{ marginVertical: 15 }}>
+        <View style={{marginVertical: 15}}>
           <CustomButton
             title={'Save'}
             backgroundColor={pinkColor}
-            containerStyle={{ width: '90%' }}
+            containerStyle={{width: '90%'}}
             onPress={() => this.updateProfile()}
           />
         </View>
@@ -313,9 +330,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#BBB',
     borderWidth: 0.5,
   },
-  heading: { color: 'grey', fontSize: 14, fontWeight: 'bold', margin: 4 },
-  number: { color: '#fff', fontSize: 16, textAlign: 'center' },
-  inputStyle: { textAlign: 'right', color: '#ccc', fontSize: 15 },
+  heading: {color: 'grey', fontSize: 14, fontWeight: 'bold', margin: 4},
+  number: {color: '#fff', fontSize: 16, textAlign: 'center'},
+  inputStyle: {textAlign: 'right', color: '#ccc', fontSize: 15},
   inputContainer: {
     backgroundColor: themeColor,
     height: 60,
@@ -332,8 +349,11 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     userObj: state.auth.user,
-    fontFamily: state.font.fontFamily
+    fontFamily: state.font.fontFamily,
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditProfile);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(EditProfile);

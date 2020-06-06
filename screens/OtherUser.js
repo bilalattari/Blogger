@@ -164,7 +164,7 @@ class Profile extends React.Component {
             await db.collection("Notification").add(obj)
             userData.followers.push(userId);
             console.log(userData.followers, 'vvvvvvv')
-            this.setState({ userData  , isFollowed: true});
+            this.setState({ userData, isFollowed: true });
         } catch (e) {
             alert(e.message);
         }
@@ -233,7 +233,7 @@ class Profile extends React.Component {
     navigateToDetails(blog, userData) {
         const { navigation } = this.props;
         blog.userObj = userData;
-        navigation.navigate('BlogDetail', { data: blog });
+        navigation.navigate('BlogDetail', { data: blog, navigateTo: 'Otheruser', userData: userData });
     }
 
     render() {

@@ -162,6 +162,7 @@ class Login extends React.Component {
       // }).catch((err) => console.log(err))
 
     } catch (error) {
+      console.log(error , 'error')
       this.setState({ loading: false })
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow

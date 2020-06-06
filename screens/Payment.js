@@ -31,13 +31,11 @@ export const ENTRIES1 = [
   {
     type: 'BUSINESS',
     rate: '$39.99',
-    description: 'Lorem ipsum dolor sit amet et nuncat mergitur',
     illustration: require('../assets/Subscription/Asset1.png'),
   },
   {
     type: 'ADVANCE',
     rate: '$399.99',
-    description: 'Lorem ipsum dolor sit amet et nuncat mergitur',
     illustration: require('../assets/Subscription/Asset2.png'),
   },
 ];
@@ -225,15 +223,7 @@ class Payment extends React.Component {
                   }}>
                   {item.rate}
                 </Text>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    fontSize: 14,
-                    color: '#bbb',
-                    marginHorizontal: 35,
-                  }}>
-                  {item.description}
-                </Text>
+              
               </View>
               <View style={{marginTop: 18}}>
                 {userType === 'paid' &&
