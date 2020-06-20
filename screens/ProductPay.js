@@ -18,6 +18,7 @@ import { themeColor, pinkColor } from '../Constant';
 import firebase from '../utils/firebase';
 import { emptyChart } from '../redux/actions/chartActions';
 import Loader from '../Component/Loader'
+import Modal from 'react-native-modal';
 const stripe = require('stripe-client')(
   'pk_test_CoqYQbVZ6tJwY9dFWN7UTfin00QpVQsX20',
 );
@@ -25,11 +26,12 @@ const stripe = require('stripe-client')(
 class ProductPay extends Component {
   state = {
     cardNumber: '4242424242424242',
-    expMonth: '03',
+    expMonth: '06',
     expYear: '2020',
     cvcNumber: '222',
     email: '',
     customerId: '',
+    showModal: false,
     loading: false,
     address: '',
     accNum: ''
@@ -92,6 +94,7 @@ class ProductPay extends Component {
       customerId,
       address,
       accNum,
+      showModal,
     } = this.state;
     const subscription = this.props.navigation.state.params.subscription;
     const type = this.props.navigation.state.params.type;
@@ -108,7 +111,7 @@ class ProductPay extends Component {
     chart.map(item => {
       const obj = {
         productName: item.productName,
-        price: item.price,
+        price: +item.price,
       };
       productDetails.products.push(obj);
     });
@@ -211,7 +214,7 @@ class ProductPay extends Component {
               raw: { message },
             },
           } = chargeResponse;
-          alert('message');
+          alert(message);
           this.setState({ loading: false });
           return;
         }
@@ -270,7 +273,6 @@ class ProductPay extends Component {
         await firebase.updateDoc('Users', userId, updateUserDoc);
       }
 
-      // Saving user card in db
 
       await dbLib
         .collection('Customers')
@@ -279,9 +281,7 @@ class ProductPay extends Component {
         .add(fingerPrint.response);
 
       emptyChart();
-      this.setState({ loading: false });
-      alert('Success');
-      navigation.navigate('Blog');
+      this.setState({ loading: false  , showModal : true});
     } catch (e) {
       console.log('Error ====>', e);
     }
@@ -311,7 +311,8 @@ class ProductPay extends Component {
       email,
       loading,
       address,
-      accNum
+      accNum,
+      showModal
     } = this.state;
     const amount = this.props.navigation.state.params.amount;
     const subscription = this.props.navigation.state.params.subscription;
@@ -322,7 +323,48 @@ class ProductPay extends Component {
         style={styles.container}
         contentContainerStyle={{ flexGrow: 1 }}>
         <Loader isVisible={loading} />
-
+        <Modal
+            isVisible={showModal}
+            onBackdropPress={() => this.setState({showModal: false})}
+            onBackButtonPress={() => this.setState({showModal: false})}>
+            <View
+              style={{
+                height: 400,
+                width: '90%',
+                alignSelf: 'center',
+                justifyContent: 'space-around',
+                borderRadius: 5,
+                backgroundColor: themeColor,
+              }}>
+              <Text
+                fontFamily={this.props.fontfamily}
+                text={'Payment Successfull'}
+                font={19}
+                color={'#fff'}
+              />
+              <Image
+                source={require('../assets/paymentSuccess.png')}
+                style={{
+                  height: 200,
+                  width: 200,
+                  marginLeft: 6,
+                  alignSelf: 'center',
+                  resizeMode: 'contain',
+                }}
+              />
+              <Button
+                width={190}
+                title={`OK`}
+                backgroundColor={pinkColor}
+                fontFamily={this.props.fontfamily}
+                onPress={() =>
+                  this.setState({showModal: false}, () => {
+                    this.props.navigation.navigate('Blog');
+                  })
+                }
+              />
+            </View>
+          </Modal>
         <View
           style={{
             height: 100,
@@ -356,12 +398,14 @@ class ProductPay extends Component {
           }}>
           <Button
             title={'Back'}
+            fontFamily={this.props.fontfamily}
             buttonStyle={{ borderColor: '#ccc', borderWidth: 1 }}
             onPress={() => this.props.navigation.goBack()}
           />
           <Button
             width={190}
             title={`Pay ${amount}`}
+            fontFamily={this.props.fontfamily}
             backgroundColor={pinkColor}
             onPress={() => this.pay()}
           />
@@ -472,6 +516,7 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     userObj: state.auth.user,
+    fontfamily: state.font.fontFamily,
     chart: state.chart.chart,
   };
 };

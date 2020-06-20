@@ -538,7 +538,7 @@ class Blog extends React.Component {
         .update({
           followers: FieldValue.arrayRemove(userId),
         });
-      this.setState({ isFollowed: false });
+      this.setState({ isFollowed: false } ,()=> this.getBlogs());
     } catch (e) {
       alert(e.message);
     }

@@ -22,8 +22,7 @@ import {themeColor, pinkColor} from '../Constant';
 import {connect} from 'react-redux';
 import {addToChart} from '../redux/actions/chartActions';
 
-
-let width = Dimensions.get('screen').width
+let width = Dimensions.get('screen').width;
 class Detail extends React.Component {
   constructor(props) {
     super(props);
@@ -44,9 +43,7 @@ class Detail extends React.Component {
         borderBottomColor: 'grey',
         borderBottomWidth: 0.5,
       }}>
-      <Text style={{fontSize: 18,  color: '#bbb'}}>
-        {name}
-      </Text>
+      <Text style={{fontSize: 18, color: '#bbb'}}>{name}</Text>
       <Text style={{color: 'grey'}}>{description}</Text>
     </View>
   );
@@ -64,12 +61,13 @@ class Detail extends React.Component {
   }
 
   render() {
-    const {navigation} = this.props;
+    const {navigation , userObj} = this.props;
     const {
       state: {
         params: {data},
       },
     } = navigation;
+    console.log(userObj , 'userObjuserObjuserObj')
     let {follow} = this.state;
     return (
       <ScrollView
@@ -79,7 +77,7 @@ class Detail extends React.Component {
         <ImageBackground
           source={{uri: data.imageUrl}}
           style={{
-            height: width/1.1,
+            height: width / 1.1,
             width: '100%',
             backgroundColor: '#ccc',
             justifyContent: 'space-between',
@@ -117,12 +115,24 @@ class Detail extends React.Component {
               backgroundColor={this.state.follow ? pinkColor : themeColor}
             />
           </View>
-          <CustomButton
-            title={'Buy'}
-            backgroundColor={pinkColor}
-            containerStyle={[{width: '90%', marginTop: 12}]}
-            onPress={() => this.addIntoChart(data)}
-          />
+          {userObj.userId !== data.userId && (
+            <CustomButton
+              title={'Buy'}
+              backgroundColor={pinkColor}
+              fontFamily = {this.props.fontFamily}
+              containerStyle={[{width: '90%', marginTop: 12}]}
+              onPress={() => this.addIntoChart(data)}
+            />
+          )}
+          {userObj.userId === data.userId && (
+            <CustomButton
+              title={'Edit'}
+              fontFamily = {this.props.fontFamily}
+              backgroundColor={pinkColor}
+              containerStyle={[{width: '90%', marginTop: 12}]}
+              onPress={() => this.props.navigation.navigate('AddProduct' , {data : data})}
+            />
+          )}
         </View>
         <View style={{paddingVertical: 25}}>
           {this.textViews('Description', data.discription)}
@@ -229,7 +239,12 @@ const mapDispatchToProps = dispatch => {
   };
 };
 const mapStateToProps = state => {
-  return {chart: state.chart.chart};
+  return {chart: state.chart.chart, userObj: state.auth.user , fontFamily: state.font.fontFamily,
+  };
+  
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Detail);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Detail);

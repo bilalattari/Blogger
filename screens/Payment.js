@@ -15,14 +15,14 @@ import {SearchBar, Icon} from 'react-native-elements';
 import CustomInput from '../Component/Input';
 import CustomButton from '../Component/Button';
 import CustomHeader from '../Component/header';
-const {width: screenWidth , height : screenHeight} = Dimensions.get('window');
+const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
 import {SwipeListView} from 'react-native-swipe-list-view';
 import Carousel, {ParallaxImage, Pagination} from 'react-native-snap-carousel';
 import {themeColor, pinkColor} from '../Constant';
 import firebase from '../utils/firebase';
 import {connect} from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
-import Loader from '../Component/Loader'
+import Loader from '../Component/Loader';
 const stripe = require('stripe-client')(
   'pk_test_CoqYQbVZ6tJwY9dFWN7UTfin00QpVQsX20',
 );
@@ -47,6 +47,7 @@ class Payment extends React.Component {
       follow: false,
       address: false,
       customerId: '',
+      showModal: false,
       loading: true,
     };
   }
@@ -72,7 +73,7 @@ class Payment extends React.Component {
         <ParallaxImage
           source={{uri: item.illustration}}
           containerStyle={{height: 250}}
-          style={{resizeMode : "contain" , height : "100%" , width : '100%'}}
+          style={{resizeMode: 'contain', height: '100%', width: '100%'}}
           parallaxFactor={0.4}
           {...parallaxProps}
         />
@@ -160,7 +161,7 @@ class Payment extends React.Component {
           body: JSON.stringify({subscriptionId}),
         },
       );
-      
+
       if (!cancelSubscription.ok) {
         alert('Something Wrong');
         this.setState({loading: false});
@@ -171,8 +172,7 @@ class Payment extends React.Component {
         userPackage: 'none',
       };
       await firebase.updateDoc('Users', userId, updateUserDoc);
-      alert('Success');
-      this.setState({loading: false});
+      this.setState({loading: false, showModal: true});
     } catch (e) {
       alert(e.message);
     }
@@ -180,12 +180,12 @@ class Payment extends React.Component {
   render() {
     const {navigation, userObj} = this.props;
     const {userType, userPackage} = userObj;
-    let {address, customerId, loading} = this.state;
+    let {address, customerId, loading, showModal} = this.state;
     return (
       <View
         stickyHeaderIndices={[0]}
         style={{backgroundColor: '#323643', flex: 1}}>
-               <Loader isVisible  = {loading} />
+        <Loader isVisible={loading} />
 
         <CustomHeader title={'PAYMENT'} navigation={navigation} />
         <Carousel
@@ -197,8 +197,8 @@ class Payment extends React.Component {
             <View style={{flex: 1, justifyContent: 'space-around'}}>
               <ParallaxImage
                 source={item.illustration}
-                containerStyle={{height:screenHeight/2.7 , borderRadius : 15 }}
-                style={{borderRadius: 10 , resizeMode : "contain"}}
+                containerStyle={{height: screenHeight / 2.7, borderRadius: 15}}
+                style={{borderRadius: 10, resizeMode: 'contain'}}
                 parallaxFactor={0.4}
                 {...parallaxProps}
               />
@@ -209,7 +209,7 @@ class Payment extends React.Component {
                     fontSize: 22,
                     fontWeight: 'bold',
                     color: pinkColor,
-                    marginVertical  : 6
+                    marginVertical: 6,
                   }}>
                   {item.type}
                 </Text>
@@ -219,11 +219,10 @@ class Payment extends React.Component {
                     fontSize: 30,
                     fontWeight: 'bold',
                     color: '#fff',
-                    marginVertical  : 4
+                    marginVertical: 4,
                   }}>
                   {item.rate}
                 </Text>
-              
               </View>
               <View style={{marginTop: 18}}>
                 {userType === 'paid' &&
@@ -231,6 +230,7 @@ class Payment extends React.Component {
                   <CustomButton
                     title={'Cancle Subscription'}
                     backgroundColor={pinkColor}
+                    fontFamily={this.props.fontFamily}
                     containerStyle={{width: '95%'}}
                     onPress={() => this.cancel(item)}
                   />
@@ -238,6 +238,7 @@ class Payment extends React.Component {
                   <CustomButton
                     title={'BUY NOW'}
                     backgroundColor={pinkColor}
+                    fontFamily={this.props.fontFamily}
                     containerStyle={{width: '95%'}}
                     onPress={() => this.buy(item)}
                   />
@@ -284,7 +285,10 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     userObj: state.auth.user,
-    fontFamily : state.font.fontFamily
+    fontFamily: state.font.fontFamily,
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(Payment);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Payment);

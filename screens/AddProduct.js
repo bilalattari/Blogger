@@ -11,7 +11,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import CustomButton from '../Component/Button';
 import {themeColor, pinkColor} from '../Constant';
 import firebase from '../utils/firebase';
-import Loader from '../Component/Loader'
+import Loader from '../Component/Loader';
 
 class AddProduct extends Component {
   state = {
@@ -23,19 +23,35 @@ class AddProduct extends Component {
     deliverInfo: '',
     retrunPolicy: '',
     loading: false,
+    update: false,
   };
   static navigationOptions = {
     header: null,
   };
 
   componentDidMount() {
-    const { userObj: { userType }, navigation } = this.props
-    if(userType === 'free'){
-      alert('You have to buy subscription for selling products')
-      navigation.goBack()
+    const {
+      userObj: {userType},
+      navigation,
+    } = this.props;
+    if (userType === 'free') {
+      alert('You have to buy subscription for selling products');
+      navigation.goBack();
+    }
+    if (navigation.getParam('data')) {
+      let projectDesc = navigation.getParam('data');
+      this.setState({
+        productName: projectDesc.productName,
+        discription: projectDesc.discription,
+        price: `${projectDesc.price}`,
+        shipFrom: projectDesc.shipFrom,
+        deliverInfo: projectDesc.deliverInfo,
+        retrunPolicy: projectDesc.retrunPolicy,
+        update: true,
+      });
     }
   }
-  
+
   galleryPermissionAndroid() {
     return request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
   }
@@ -106,13 +122,68 @@ class AddProduct extends Component {
       const imageUrl = await firebase.uploadImage(path, userObj.userId);
       objToSend.imageUrl = imageUrl;
       await firebase.addDocument('Products', objToSend);
-      alert('Posted');
-      // this.setState({ productName: '', discription: '', price: '', shipFrom: '', deliverInfo: '', retrunPolicy: '', path: '' })
+      this.setState({
+        productName: '',
+        discription: '',
+        price: '',
+        shipFrom: '',
+        deliverInfo: '',
+        retrunPolicy: '',
+        path: '',
+      });
     } catch (e) {
       alert(e.message);
     }
     this.setState({loading: false});
   }
+  updateProduct = async () => {
+    const {
+      path,
+      productName,
+      discription,
+      price,
+      shipFrom,
+      deliverInfo,
+      retrunPolicy,
+    } = this.state;
+    const {userObj, navigation} = this.props;
+    let projectDesc = navigation.getParam('data');
+    try {
+      this.setState({loading: true});
+      const objToSend = {
+        productName,
+        discription,
+        price: parseInt(price),
+        shipFrom,
+        deliverInfo,
+        retrunPolicy,
+        userId: userObj.userId,
+        createdAt: projectDesc.createdAt,
+        email: userObj.email,
+        deleted: false,
+      };
+      if (path) {
+        const imageUrl = await firebase.uploadImage(path, userObj.userId);
+        objToSend.imageUrl = imageUrl;
+      } else {
+        objToSend.imageUrl = projectDesc.imageUrl;
+      }
+      await firebase.updateDoc('Products', projectDesc.id, objToSend);
+      this.props.navigation.navigate('Shop');
+      this.setState({
+        productName: '',
+        discription: '',
+        price: '',
+        shipFrom: '',
+        deliverInfo: '',
+        retrunPolicy: '',
+        path: '',
+      });
+    } catch (e) {
+      alert(e.message);
+    }
+    this.setState({loading: false});
+  };
 
   render() {
     const {
@@ -124,13 +195,14 @@ class AddProduct extends Component {
       deliverInfo,
       retrunPolicy,
       loading,
+      update,
     } = this.state;
-    const { navigation } = this.props
+    const {navigation} = this.props;
     return (
       <ScrollView
         style={styles.container}
         contentContainerStyle={{flexGrow: 1}}>
-               <Loader isVisible = {loading} />
+        <Loader isVisible={loading} />
 
         <View
           style={{
@@ -166,13 +238,21 @@ class AddProduct extends Component {
           }}>
           <CustomButton
             title={'Close'}
+            fontFamily={this.props.fontfamily}
             buttonStyle={{borderColor: '#ccc', borderWidth: 1}}
             onPress={() => navigation.goBack()}
           />
           <CustomButton
-            title={'Post Product'}
+            title={update ? 'Update Product' : 'Post Product'}
+            fontFamily={this.props.fontfamily}
             backgroundColor={pinkColor}
-            onPress={() => this.addProduct()}
+            onPress={() => {
+              if (update) {
+                this.updateProduct();
+              } else {
+                this.addProduct();
+              }
+            }}
           />
         </View>
         <>
@@ -247,6 +327,7 @@ class AddProduct extends Component {
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
           <CustomButton
             title={'Upload Picture'}
+            fontFamily={this.props.fontfamily}
             buttonStyle={{
               borderColor: '#ccc',
               borderWidth: 1,
@@ -265,9 +346,13 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     userObj: state.auth.user,
+    fontfamily: state.font.fontFamily,
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(AddProduct);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(AddProduct);
 
 const styles = StyleSheet.create({
   container: {

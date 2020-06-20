@@ -125,12 +125,7 @@ const HomeStack = createStackNavigator({
   },
 
 
-  Detail: {
-    screen: Detail,
-    navigationOptions: {
-      headerTitle: 'Feedback'
-    }
-  },
+ 
   Privacy: {
     screen: Privacy,
     navigationOptions: {
@@ -236,6 +231,12 @@ const ShoppingStack = createStackNavigator({
     screen: AddProduct,
     navigationOptions: {
       headerTitle: 'Shop'
+    }
+  },
+  Detail: {
+    screen: Detail,
+    navigationOptions: {
+      headerTitle: 'Feedback'
     }
   },
   ProductPay: {

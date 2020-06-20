@@ -9,7 +9,6 @@ class ProductContainer extends Component {
   render() {
     const { data, navigate, userObj } = this.props;
     return (
-      userObj.userId !== data.userId && (
         <TouchableOpacity onPress={navigate}>
           <View style={styles.productMainContainer}>
             <Image
@@ -21,18 +20,17 @@ class ProductContainer extends Component {
             />
             <View style={styles.prodcutDetailContainer}>
               <Text style={styles.productName}>{data.productName}</Text>
-              <Text style={styles.productPrice}>{data.price}</Text>
+              <Text style={styles.productPrice}>${data.price}</Text>
             </View>
           </View>
         </TouchableOpacity>
-      )
     );
   }
 }
 
 const styles = StyleSheet.create({
   productMainContainer: {
-    marginVertical: 14,
+    margin:8,
   },
   prodcutDetailContainer: {
     flexDirection: 'row',
